@@ -4,6 +4,8 @@ import { sdk } from "@lib/config"
 import { HttpTypes } from "@medusajs/types"
 import { getCacheOptions } from "./cookies"
 
+const STORE_COUNTRY_CODE = process.env.NEXT_PUBLIC_DEFAULT_REGION || "il"
+
 export const listRegions = async () => {
   const next = {
     ...(await getCacheOptions("regions")),
@@ -32,28 +34,21 @@ export const retrieveRegion = async (id: string) => {
     .then(({ region }) => region)
 }
 
-const regionMap = new Map<string, HttpTypes.StoreRegion>()
-
-export const getRegion = async (countryCode: string) => {
-  if (regionMap.has(countryCode)) {
-    return regionMap.get(countryCode)
-  }
-
+/**
+ * Returns the store's single region (Israel). The storefront doesn't offer
+ * multi-region routing, so this always resolves the same region rather than
+ * taking a country code from the URL.
+ */
+export const getRegion = async () => {
   const regions = await listRegions()
 
-  if (!regions) {
+  if (!regions?.length) {
     return null
   }
 
-  regions.forEach((region) => {
-    region.countries?.forEach((c) => {
-      regionMap.set(c?.iso_2 ?? "", region)
-    })
-  })
-
-  const region = countryCode
-    ? regionMap.get(countryCode)
-    : regionMap.get("us")
-
-  return region
+  return (
+    regions.find((region) =>
+      region.countries?.some((c) => c.iso_2 === STORE_COUNTRY_CODE)
+    ) ?? regions[0]
+  )
 }

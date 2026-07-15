@@ -10,14 +10,8 @@ export const metadata: Metadata = {
   description: "Handmade ceramics from Emma Ceramics.",
 }
 
-export default async function Home(props: {
-  params: Promise<{ countryCode: string }>
-}) {
-  const params = await props.params
-
-  const { countryCode } = params
-
-  const region = await getRegion(countryCode)
+export default async function Home() {
+  const region = await getRegion()
 
   const { collections } = await listCollections({
     fields: "id, handle, title",

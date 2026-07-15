@@ -17,13 +17,9 @@ type StorePageSearchParams = Record<string, string | string[] | undefined> & {
 
 type Params = {
   searchParams: Promise<StorePageSearchParams>
-  params: Promise<{
-    countryCode: string
-  }>
 }
 
 export default async function StorePage(props: Params) {
-  const params = await props.params;
   const searchParams = await props.searchParams;
   const { sortBy, page } = searchParams
   const optionValueIds = parseOptionValueIds(searchParams)
@@ -32,7 +28,6 @@ export default async function StorePage(props: Params) {
     <StoreTemplate
       sortBy={sortBy}
       page={page}
-      countryCode={params.countryCode}
       optionValueIds={optionValueIds}
     />
   )
