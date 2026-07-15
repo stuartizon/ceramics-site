@@ -2,6 +2,48 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+/*
+  Brand skin for the shared @medusajs/ui-preset design tokens.
+  Only the neutral "chrome" variables are retinted here (backgrounds,
+  borders, text, interactive/focus states) — the semantic feedback
+  colors (error/success/warning/tag-*) are left untouched so status
+  and validation UI keeps its conventional meaning.
+*/
+@layer base {
+  :root {
+    --bg-subtle: rgba(240, 242, 249, 1);
+    --bg-subtle-hover: rgba(232, 236, 247, 1);
+    --bg-subtle-pressed: rgba(216, 222, 240, 1);
+    --bg-component: rgba(248, 249, 252, 1);
+    --bg-component-hover: rgba(232, 236, 247, 1);
+    --bg-component-pressed: rgba(216, 222, 240, 1);
+    --bg-highlight: rgba(255, 188, 125, 0.16);
+    --bg-highlight-hover: rgba(255, 188, 125, 0.28);
+    --bg-overlay: rgba(27, 36, 64, 0.5);
+
+    --border-base: rgba(210, 216, 238, 0.7);
+    --border-strong: rgba(184, 194, 224, 1);
+    --border-interactive: rgba(191, 125, 163, 1);
+
+    --fg-base: rgba(39, 50, 90, 1);
+    --fg-subtle: rgba(75, 90, 138, 1);
+    --fg-muted: rgba(124, 134, 168, 1);
+    --fg-interactive: rgba(191, 125, 163, 1);
+    --fg-interactive-hover: rgba(156, 92, 129, 1);
+
+    --bg-interactive: rgba(191, 125, 163, 1);
+
+    --button-inverted: rgba(39, 50, 90, 1);
+    --button-inverted-hover: rgba(59, 74, 122, 1);
+    --button-inverted-pressed: rgba(27, 36, 64, 1);
+
+    --contrast-bg-base: rgba(39, 50, 90, 1);
+    --contrast-bg-base-hover: rgba(59, 74, 122, 1);
+    --contrast-bg-base-pressed: rgba(27, 36, 64, 1);
+    --contrast-border-top: rgba(39, 50, 90, 1);
+  }
+}
+
 @layer utilities {
   /* Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
@@ -55,7 +97,7 @@
   }
 
   .contrast-btn {
-    @apply px-4 py-2 border border-black rounded-full hover:bg-black hover:text-white transition-colors duration-200 ease-in;
+    @apply px-4 py-2 border border-navy rounded-lg hover:bg-navy hover:text-white transition-colors duration-200 ease-in;
   }
 
   .text-xsmall-regular {

@@ -33,6 +33,32 @@ module.exports = {
           80: "#1F2937",
           90: "#111827",
         },
+        // Brand palette, sourced from the Em Ceramics reference site
+        navy: {
+          DEFAULT: "#27325A",
+          light: "#3B4A7A",
+          dark: "#1B2440",
+        },
+        periwinkle: {
+          DEFAULT: "#D2D8EE",
+          light: "#E8ECF7",
+          dark: "#B8C2E0",
+        },
+        mauve: {
+          DEFAULT: "#BF7DA3",
+          light: "#D9A9C2",
+          dark: "#9C5C81",
+        },
+        lavender: {
+          DEFAULT: "#F0F2F9",
+          light: "#F8F9FC",
+          dark: "#E3E7F5",
+        },
+        peach: {
+          DEFAULT: "#FFBC7D",
+          light: "#FFD4A8",
+          dark: "#F5A356",
+        },
       },
       borderRadius: {
         none: "0px",
@@ -59,7 +85,7 @@ module.exports = {
       },
       fontFamily: {
         sans: [
-          "Inter",
+          "var(--font-sans)",
           "-apple-system",
           "BlinkMacSystemFont",
           "Segoe UI",
@@ -67,6 +93,13 @@ module.exports = {
           "Helvetica Neue",
           "Ubuntu",
           "sans-serif",
+        ],
+        serif: [
+          "var(--font-serif)",
+          "Georgia",
+          "Cambria",
+          "Times New Roman",
+          "serif",
         ],
       },
       keyframes: {
