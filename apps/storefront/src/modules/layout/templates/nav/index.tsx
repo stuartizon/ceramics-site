@@ -31,7 +31,7 @@ export default async function Nav() {
               className="font-serif text-xl tracking-wide hover:text-ui-fg-base uppercase"
               data-testid="nav-store-link"
             >
-              Medusa Store
+              Emma Ceramics
             </LocalizedClientLink>
           </div>
 
