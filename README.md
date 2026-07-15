@@ -38,28 +38,22 @@ A monorepo ecommerce site built on [Medusa](https://www.medusajs.com) (headless 
    cp apps/backend/.env.template apps/backend/.env
    ```
 
-4. Run migrations (also seeds demo store data — regions, a sample sales channel, a few demo products):
+4. Run migrations. This also seeds store data (region, sales channel, categories, starter products) and, in development, creates a default admin user (`admin@example.com` / `password` — dev-only, never created outside `NODE_ENV=development`):
 
    ```bash
    cd apps/backend
    npx medusa db:migrate
    ```
 
-5. Create an admin user:
-
-   ```bash
-   npx medusa user -e admin@example.com -p <your-password>
-   ```
-
-6. Start the Medusa backend:
+5. Start the Medusa backend:
 
    ```bash
    npx medusa develop
    ```
 
-   Open the admin dashboard at `http://localhost:9000/app` and log in. Grab a publishable API key from Settings > Publishable API Keys (the demo seed already creates a default one, viewable there).
+   Open the admin dashboard at `http://localhost:9000/app` and log in with `admin@example.com` / `password`. Grab a publishable API key from Settings > Publishable API Keys (the seed already creates a default one, viewable there).
 
-7. Set up storefront environment variables, then fill in the publishable key from step 6:
+6. Set up storefront environment variables, then fill in the publishable key from step 5:
 
    ```bash
    cd apps/storefront
@@ -67,7 +61,7 @@ A monorepo ecommerce site built on [Medusa](https://www.medusajs.com) (headless 
    # edit .env.local: set NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_...
    ```
 
-8. Start the storefront:
+7. Start the storefront:
 
    ```bash
    npm run dev
@@ -91,7 +85,7 @@ The storefront is configured via environment variables in `apps/storefront/.env.
 |----------|-------------|---------|
 | `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` | Publishable API key from your Medusa backend | — (must be set) |
 | `NEXT_PUBLIC_MEDUSA_BACKEND_URL` | URL of your Medusa backend | `http://localhost:9000` |
-| `NEXT_PUBLIC_DEFAULT_REGION` | Default region country code | `dk` (demo seed region; will change once real regions/currency for Israel are configured) |
+| `NEXT_PUBLIC_DEFAULT_REGION` | Default region country code | `il` |
 | `NEXT_PUBLIC_BASE_URL` | Base URL of the storefront | `http://localhost:8000` |
 | `NEXT_PUBLIC_STRIPE_KEY` | Stripe publishable key (optional, unused — payments are planned via Meshulam/Grow) | — |
 

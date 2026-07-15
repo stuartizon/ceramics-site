@@ -35,7 +35,7 @@ export default async function initial_data_seed({
     ModuleRegistrationName.FULFILLMENT
   );
 
-  const countries = ["gb", "de", "dk", "se", "fr", "es", "it"];
+  const countries = ["il"];
 
   logger.info("Seeding store data...");
   const {
@@ -44,8 +44,8 @@ export default async function initial_data_seed({
     input: {
       salesChannelsData: [
         {
-          name: "Default Sales Channel",
-          description: "Created by Medusa",
+          name: "Emma Ceramics Storefront",
+          description: "Default sales channel for Emma Ceramics",
         },
       ],
     },
@@ -57,7 +57,7 @@ export default async function initial_data_seed({
     input: {
       api_keys: [
         {
-          title: "Default Publishable API Key",
+          title: "Emma Ceramics Publishable API Key",
           type: "publishable",
           created_by: "",
         },
@@ -78,10 +78,10 @@ export default async function initial_data_seed({
     input: {
       stores: [
         {
-          name: "Default Store",
+          name: "Emma Ceramics",
           supported_currencies: [
             {
-              currency_code: "eur",
+              currency_code: "ils",
               is_default: true,
             },
             {
@@ -100,8 +100,8 @@ export default async function initial_data_seed({
     input: {
       regions: [
         {
-          name: "Europe",
-          currency_code: "eur",
+          name: "Israel",
+          currency_code: "ils",
           countries,
           payment_providers: ["pp_system_default"],
         },
@@ -127,10 +127,10 @@ export default async function initial_data_seed({
     input: {
       locations: [
         {
-          name: "European Warehouse",
+          name: "Jerusalem Studio",
           address: {
-            city: "Copenhagen",
-            country_code: "DK",
+            city: "Jerusalem",
+            country_code: "IL",
             address_1: "",
           },
         },
@@ -157,38 +157,14 @@ export default async function initial_data_seed({
   const shippingProfile = shippingProfileResult[0];
 
   const fulfillmentSet = await fulfillmentModuleService.createFulfillmentSets({
-    name: "European Warehouse delivery",
+    name: "Jerusalem Studio Delivery",
     type: "shipping",
     service_zones: [
       {
-        name: "Europe",
+        name: "Israel",
         geo_zones: [
           {
-            country_code: "gb",
-            type: "country",
-          },
-          {
-            country_code: "de",
-            type: "country",
-          },
-          {
-            country_code: "dk",
-            type: "country",
-          },
-          {
-            country_code: "se",
-            type: "country",
-          },
-          {
-            country_code: "fr",
-            type: "country",
-          },
-          {
-            country_code: "es",
-            type: "country",
-          },
-          {
-            country_code: "it",
+            country_code: "il",
             type: "country",
           },
         ],
@@ -205,6 +181,7 @@ export default async function initial_data_seed({
     },
   });
 
+  // Nominal placeholder shipping prices - adjust once real rates are known.
   await createShippingOptionsWorkflow(container).run({
     input: [
       {
@@ -221,15 +198,15 @@ export default async function initial_data_seed({
         prices: [
           {
             currency_code: "usd",
-            amount: 10,
+            amount: 6,
           },
           {
-            currency_code: "eur",
-            amount: 10,
+            currency_code: "ils",
+            amount: 20,
           },
           {
             region_id: region.id,
-            amount: 10,
+            amount: 20,
           },
         ],
         rules: [
@@ -259,15 +236,15 @@ export default async function initial_data_seed({
         prices: [
           {
             currency_code: "usd",
-            amount: 10,
+            amount: 15,
           },
           {
-            currency_code: "eur",
-            amount: 10,
+            currency_code: "ils",
+            amount: 50,
           },
           {
             region_id: region.id,
-            amount: 10,
+            amount: 50,
           },
         ],
         rules: [
@@ -303,25 +280,18 @@ export default async function initial_data_seed({
     input: {
       product_categories: [
         {
-          name: "Shirts",
+          name: "Mugs & Cups",
           is_active: true,
         },
         {
-          name: "Sweatshirts",
-          is_active: true,
-        },
-        {
-          name: "Pants",
-          is_active: true,
-        },
-        {
-          name: "Merch",
+          name: "Bowls & Plates",
           is_active: true,
         },
       ],
     },
   });
 
+  // Placeholder values - review and adjust to match actual studio offerings.
   const { result: productOptionsResult } = await createProductOptionsWorkflow(
     container
   ).run({
@@ -329,191 +299,139 @@ export default async function initial_data_seed({
       product_options: [
         {
           title: "Size",
-          values: ["S", "M", "L", "XL"],
+          values: ["Small", "Medium", "Large"],
         },
         {
-          title: "Color",
-          values: ["Black", "White"],
+          title: "Glaze",
+          values: ["Matte White", "Speckled Clay"],
         },
       ],
     },
   });
   const sizeOption = productOptionsResult.find((o) => o.title === "Size")!;
-  const colorOption = productOptionsResult.find((o) => o.title === "Color")!;
+  const glazeOption = productOptionsResult.find((o) => o.title === "Glaze")!;
 
+  // No product images yet - add these once real product photography is available.
   await createProductsWorkflow(container).run({
     input: {
       products: [
         {
-          title: "Medusa T-Shirt",
+          title: "Stoneware Mug",
           category_ids: [
-            categoryResult.find((cat) => cat.name === "Shirts")!.id,
+            categoryResult.find((cat) => cat.name === "Mugs & Cups")!.id,
           ],
           description:
-            "Reimagine the feeling of a classic T-shirt. With our cotton T-shirts, everyday essentials no longer have to be ordinary.",
-          handle: "t-shirt",
-          weight: 400,
+            "A handmade stoneware mug, thrown and glazed in the studio. Each piece is unique.",
+          handle: "stoneware-mug",
+          weight: 350,
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
-          images: [
-            {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-front.png",
-            },
-            {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-back.png",
-            },
-            {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-white-front.png",
-            },
-            {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-white-back.png",
-            },
-          ],
-          options: [
-            { id: sizeOption.id },
-            { id: colorOption.id },
-          ],
+          options: [{ id: sizeOption.id }, { id: glazeOption.id }],
           variants: [
             {
-              title: "S / Black",
-              sku: "SHIRT-S-BLACK",
+              title: "Small / Matte White",
+              sku: "MUG-S-MATTE-WHITE",
               options: {
-                Size: "S",
-                Color: "Black",
+                Size: "Small",
+                Glaze: "Matte White",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
+                  amount: 120,
+                  currency_code: "ils",
                 },
                 {
-                  amount: 15,
+                  amount: 35,
                   currency_code: "usd",
                 },
               ],
             },
             {
-              title: "S / White",
-              sku: "SHIRT-S-WHITE",
+              title: "Small / Speckled Clay",
+              sku: "MUG-S-SPECKLED-CLAY",
               options: {
-                Size: "S",
-                Color: "White",
+                Size: "Small",
+                Glaze: "Speckled Clay",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
+                  amount: 120,
+                  currency_code: "ils",
                 },
                 {
-                  amount: 15,
+                  amount: 35,
                   currency_code: "usd",
                 },
               ],
             },
             {
-              title: "M / Black",
-              sku: "SHIRT-M-BLACK",
+              title: "Medium / Matte White",
+              sku: "MUG-M-MATTE-WHITE",
               options: {
-                Size: "M",
-                Color: "Black",
+                Size: "Medium",
+                Glaze: "Matte White",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
+                  amount: 120,
+                  currency_code: "ils",
                 },
                 {
-                  amount: 15,
+                  amount: 35,
                   currency_code: "usd",
                 },
               ],
             },
             {
-              title: "M / White",
-              sku: "SHIRT-M-WHITE",
+              title: "Medium / Speckled Clay",
+              sku: "MUG-M-SPECKLED-CLAY",
               options: {
-                Size: "M",
-                Color: "White",
+                Size: "Medium",
+                Glaze: "Speckled Clay",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
+                  amount: 120,
+                  currency_code: "ils",
                 },
                 {
-                  amount: 15,
+                  amount: 35,
                   currency_code: "usd",
                 },
               ],
             },
             {
-              title: "L / Black",
-              sku: "SHIRT-L-BLACK",
+              title: "Large / Matte White",
+              sku: "MUG-L-MATTE-WHITE",
               options: {
-                Size: "L",
-                Color: "Black",
+                Size: "Large",
+                Glaze: "Matte White",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
+                  amount: 120,
+                  currency_code: "ils",
                 },
                 {
-                  amount: 15,
+                  amount: 35,
                   currency_code: "usd",
                 },
               ],
             },
             {
-              title: "L / White",
-              sku: "SHIRT-L-WHITE",
+              title: "Large / Speckled Clay",
+              sku: "MUG-L-SPECKLED-CLAY",
               options: {
-                Size: "L",
-                Color: "White",
+                Size: "Large",
+                Glaze: "Speckled Clay",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
+                  amount: 120,
+                  currency_code: "ils",
                 },
                 {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "XL / Black",
-              sku: "SHIRT-XL-BLACK",
-              options: {
-                Size: "XL",
-                Color: "Black",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "XL / White",
-              sku: "SHIRT-XL-WHITE",
-              options: {
-                Size: "XL",
-                Color: "White",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
+                  amount: 35,
                   currency_code: "usd",
                 },
               ],
@@ -526,282 +444,65 @@ export default async function initial_data_seed({
           ],
         },
         {
-          title: "Medusa Sweatshirt",
+          title: "Ceramic Bowl",
           category_ids: [
-            categoryResult.find((cat) => cat.name === "Sweatshirts")!.id,
+            categoryResult.find((cat) => cat.name === "Bowls & Plates")!.id,
           ],
           description:
-            "Reimagine the feeling of a classic sweatshirt. With our cotton sweatshirt, everyday essentials no longer have to be ordinary.",
-          handle: "sweatshirt",
-          weight: 400,
+            "A handmade ceramic bowl, thrown and glazed in the studio. Each piece is unique.",
+          handle: "ceramic-bowl",
+          weight: 500,
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
-          images: [
-            {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatshirt-vintage-front.png",
-            },
-            {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatshirt-vintage-back.png",
-            },
-          ],
           options: [{ id: sizeOption.id }],
           variants: [
             {
-              title: "S",
-              sku: "SWEATSHIRT-S",
+              title: "Small",
+              sku: "BOWL-S",
               options: {
-                Size: "S",
+                Size: "Small",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
+                  amount: 150,
+                  currency_code: "ils",
                 },
                 {
-                  amount: 15,
+                  amount: 45,
                   currency_code: "usd",
                 },
               ],
             },
             {
-              title: "M",
-              sku: "SWEATSHIRT-M",
+              title: "Medium",
+              sku: "BOWL-M",
               options: {
-                Size: "M",
+                Size: "Medium",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
+                  amount: 150,
+                  currency_code: "ils",
                 },
                 {
-                  amount: 15,
+                  amount: 45,
                   currency_code: "usd",
                 },
               ],
             },
             {
-              title: "L",
-              sku: "SWEATSHIRT-L",
+              title: "Large",
+              sku: "BOWL-L",
               options: {
-                Size: "L",
+                Size: "Large",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
+                  amount: 150,
+                  currency_code: "ils",
                 },
                 {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "XL",
-              sku: "SWEATSHIRT-XL",
-              options: {
-                Size: "XL",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-          ],
-          sales_channels: [
-            {
-              id: defaultSalesChannel.id,
-            },
-          ],
-        },
-        {
-          title: "Medusa Sweatpants",
-          category_ids: [
-            categoryResult.find((cat) => cat.name === "Pants")!.id,
-          ],
-          description:
-            "Reimagine the feeling of classic sweatpants. With our cotton sweatpants, everyday essentials no longer have to be ordinary.",
-          handle: "sweatpants",
-          weight: 400,
-          status: ProductStatus.PUBLISHED,
-          shipping_profile_id: shippingProfile.id,
-          images: [
-            {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatpants-gray-front.png",
-            },
-            {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatpants-gray-back.png",
-            },
-          ],
-          options: [{ id: sizeOption.id }],
-          variants: [
-            {
-              title: "S",
-              sku: "SWEATPANTS-S",
-              options: {
-                Size: "S",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "M",
-              sku: "SWEATPANTS-M",
-              options: {
-                Size: "M",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "L",
-              sku: "SWEATPANTS-L",
-              options: {
-                Size: "L",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "XL",
-              sku: "SWEATPANTS-XL",
-              options: {
-                Size: "XL",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-          ],
-          sales_channels: [
-            {
-              id: defaultSalesChannel.id,
-            },
-          ],
-        },
-        {
-          title: "Medusa Shorts",
-          category_ids: [
-            categoryResult.find((cat) => cat.name === "Merch")!.id,
-          ],
-          description:
-            "Reimagine the feeling of classic shorts. With our cotton shorts, everyday essentials no longer have to be ordinary.",
-          handle: "shorts",
-          weight: 400,
-          status: ProductStatus.PUBLISHED,
-          shipping_profile_id: shippingProfile.id,
-          images: [
-            {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-front.png",
-            },
-            {
-              url: "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-back.png",
-            },
-          ],
-          options: [{ id: sizeOption.id }],
-          variants: [
-            {
-              title: "S",
-              sku: "SHORTS-S",
-              options: {
-                Size: "S",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "M",
-              sku: "SHORTS-M",
-              options: {
-                Size: "M",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "L",
-              sku: "SHORTS-L",
-              options: {
-                Size: "L",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
-              ],
-            },
-            {
-              title: "XL",
-              sku: "SHORTS-XL",
-              options: {
-                Size: "XL",
-              },
-              prices: [
-                {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
+                  amount: 45,
                   currency_code: "usd",
                 },
               ],
