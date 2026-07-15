@@ -274,20 +274,47 @@ export default async function initial_data_seed({
 
   logger.info("Seeding product data...");
 
+  const categoryTree: Record<string, string[]> = {
+    Ceramics: ["Bowls", "Platters", "Snack Dishes", "Mugs"],
+    Textiles: [
+      "Tablecloths",
+      "Runners",
+      "Oven Gloves",
+      "Aprons",
+      "Pot Holders",
+      "Tea Towels",
+    ],
+    "Home Decor": ["Giraffes"],
+    Accessories: ["Earrings"],
+    "Artisanal Eats": ["Spice Blends", "Honeys"],
+  };
+
+  const { result: parentCategoryResult } =
+    await createProductCategoriesWorkflow(container).run({
+      input: {
+        product_categories: Object.keys(categoryTree).map((name) => ({
+          name,
+          is_active: true,
+        })),
+      },
+    });
+
   const { result: categoryResult } = await createProductCategoriesWorkflow(
     container
   ).run({
     input: {
-      product_categories: [
-        {
-          name: "Mugs & Cups",
-          is_active: true,
-        },
-        {
-          name: "Bowls & Plates",
-          is_active: true,
-        },
-      ],
+      product_categories: Object.entries(categoryTree).flatMap(
+        ([parentName, subcategoryNames]) => {
+          const parent = parentCategoryResult.find(
+            (cat) => cat.name === parentName
+          )!;
+          return subcategoryNames.map((name) => ({
+            name,
+            is_active: true,
+            parent_category_id: parent.id,
+          }));
+        }
+      ),
     },
   });
 
@@ -318,7 +345,7 @@ export default async function initial_data_seed({
         {
           title: "Stoneware Mug",
           category_ids: [
-            categoryResult.find((cat) => cat.name === "Mugs & Cups")!.id,
+            categoryResult.find((cat) => cat.name === "Mugs")!.id,
           ],
           description:
             "A handmade stoneware mug, thrown and glazed in the studio. Each piece is unique.",
@@ -446,7 +473,7 @@ export default async function initial_data_seed({
         {
           title: "Ceramic Bowl",
           category_ids: [
-            categoryResult.find((cat) => cat.name === "Bowls & Plates")!.id,
+            categoryResult.find((cat) => cat.name === "Bowls")!.id,
           ],
           description:
             "A handmade ceramic bowl, thrown and glazed in the studio. Each piece is unique.",
