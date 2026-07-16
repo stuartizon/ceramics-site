@@ -1,25 +1,28 @@
 import { notFound } from "next/navigation"
 import { Suspense } from "react"
 
-import InteractiveLink from "@modules/common/components/interactive-link"
 import SkeletonProductGrid from "@modules/skeletons/templates/skeleton-product-grid"
 import RefinementList from "@modules/store/components/refinement-list"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 import PaginatedProducts from "@modules/store/templates/paginated-products"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import SubcategoryPills from "@modules/categories/components/subcategory-pills"
 import { HttpTypes } from "@medusajs/types"
 import { OptionValueIds } from "@lib/util/product-option-filters"
+import { getCategoryIds } from "@lib/data/categories"
 
 export default function CategoryTemplate({
   category,
   sortBy,
   page,
   optionValueIds,
+  activeSubcategory,
 }: {
   category: HttpTypes.StoreProductCategory
   sortBy?: SortOptions
   page?: string
   optionValueIds?: OptionValueIds
+  activeSubcategory?: string
 }) {
   const pageNumber = page ? parseInt(page) : 1
   const sort = sortBy || "created_at"
@@ -36,6 +39,13 @@ export default function CategoryTemplate({
   }
 
   getParents(category)
+
+  const subcategories = category.category_children ?? []
+  const selectedSubcategory = activeSubcategory
+    ? subcategories.find((c) => c.handle === activeSubcategory)
+    : undefined
+
+  const categoryIds = getCategoryIds(selectedSubcategory ?? category)
 
   return (
     <div
@@ -69,18 +79,11 @@ export default function CategoryTemplate({
             <p>{category.description}</p>
           </div>
         )}
-        {category.category_children && (
-          <div className="mb-8 text-base-large">
-            <ul className="grid grid-cols-1 gap-2">
-              {category.category_children?.map((c) => (
-                <li key={c.id}>
-                  <InteractiveLink href={`/categories/${c.handle}`}>
-                    {c.name}
-                  </InteractiveLink>
-                </li>
-              ))}
-            </ul>
-          </div>
+        {subcategories.length > 0 && (
+          <SubcategoryPills
+            categories={subcategories}
+            activeHandle={selectedSubcategory?.handle}
+          />
         )}
         <Suspense
           fallback={
@@ -92,7 +95,7 @@ export default function CategoryTemplate({
           <PaginatedProducts
             sortBy={sort}
             page={pageNumber}
-            categoryId={category.id}
+            categoryId={categoryIds}
             optionValueIds={optionValueIds}
           />
         </Suspense>

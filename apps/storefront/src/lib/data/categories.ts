@@ -40,10 +40,26 @@ export const getCategoryByHandle = async (categoryHandle: string[]) => {
         query: {
           fields: "*category_children, *products",
           handle,
+          include_descendants_tree: true,
         },
         next,
         cache: "force-cache",
       }
     )
     .then(({ product_categories }) => product_categories[0])
+}
+
+/**
+ * Flattens a category and all of its nested subcategories into a list of ids.
+ * Relies on `category_children` being fully populated (e.g. via
+ * `include_descendants_tree`), otherwise only direct children are included.
+ */
+export const getCategoryIds = (
+  category: HttpTypes.StoreProductCategory
+): string[] => {
+  const childIds =
+    category.category_children?.flatMap((child) => getCategoryIds(child)) ??
+    []
+
+  return [category.id, ...childIds]
 }
