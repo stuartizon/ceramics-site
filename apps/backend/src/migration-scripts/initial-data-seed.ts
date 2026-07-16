@@ -30,6 +30,29 @@ import {
 // which admins will upload themselves through the admin dashboard.
 const SEED_IMAGES_DIR = join(__dirname, "seed-images");
 
+const MIME_TYPES_BY_EXTENSION: Record<string, string> = {
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  webp: "image/webp",
+  png: "image/png",
+};
+
+async function uploadSeedImages(container: MedusaContainer, filenames: string[]) {
+  const { result } = await uploadFilesWorkflow(container).run({
+    input: {
+      files: filenames.map((filename) => ({
+        filename,
+        mimeType: MIME_TYPES_BY_EXTENSION[filename.split(".").pop()!],
+        content: readFileSync(join(SEED_IMAGES_DIR, filename)).toString(
+          "base64"
+        ),
+        access: "public",
+      })),
+    },
+  });
+  return result;
+}
+
 export default async function initial_data_seed({
   container,
 }: {
@@ -345,26 +368,18 @@ export default async function initial_data_seed({
   const sizeOption = productOptionsResult.find((o) => o.title === "Size")!;
   const glazeOption = productOptionsResult.find((o) => o.title === "Glaze")!;
 
-  // Placeholder photography for the tea towel - see the SEED_IMAGES_DIR comment above.
-  // The other products have no images yet; add these once real photography is available.
-  const { result: teaTowelImageFiles } = await uploadFilesWorkflow(
-    container
-  ).run({
-    input: {
-      files: [
-        "floral-kingdom-tea-towel-1.jpg",
-        "floral-kingdom-tea-towel-2.jpg",
-        "floral-kingdom-tea-towel-3.jpg",
-      ].map((filename) => ({
-        filename,
-        mimeType: "image/jpeg",
-        content: readFileSync(join(SEED_IMAGES_DIR, filename)).toString(
-          "base64"
-        ),
-        access: "public",
-      })),
-    },
-  });
+  // Placeholder photography for the tea towel and pasta bowl - see the
+  // SEED_IMAGES_DIR comment above. The other products have no images yet;
+  // add these once real photography is available.
+  const teaTowelImageFiles = await uploadSeedImages(container, [
+    "floral-kingdom-tea-towel-1.jpg",
+    "floral-kingdom-tea-towel-2.jpg",
+    "floral-kingdom-tea-towel-3.jpg",
+  ]);
+  const pastaBowlImageFiles = await uploadSeedImages(container, [
+    "organic-pasta-bowl-1.jpg",
+    "organic-pasta-bowl-2.jpg",
+  ]);
 
   await createProductsWorkflow(container).run({
     input: {
@@ -498,66 +513,66 @@ export default async function initial_data_seed({
           ],
         },
         {
-          title: "Ceramic Bowl",
+          title: "Organic Pasta Bowl",
           category_ids: [
             categoryResult.find((cat) => cat.name === "Bowls")!.id,
           ],
           description:
-            "A handmade ceramic bowl, thrown and glazed in the studio. Each piece is unique.",
-          handle: "ceramic-bowl",
-          weight: 500,
+            "A round, deep-sided bowl with Wonki Ware’s signature wonkiness. It holds a very generous individual portion of pasta — or can easily be shared between a few friends. Also perfect for hot vegetable sides or Israeli-style quinoa salads.",
+          handle: "organic-pasta-bowl",
+          length: 21,
+          width: 9,
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
-          options: [{ id: sizeOption.id }],
+          thumbnail: pastaBowlImageFiles[0].url,
+          images: pastaBowlImageFiles.map((file) => ({ url: file.url })),
+          options: [
+            {
+              title: "Color",
+              values: [
+                "Blue Mixed Pattern",
+                "Marine Mixed Pattern",
+                "Pink Mixed Pattern",
+              ],
+            },
+          ],
           variants: [
             {
-              title: "Small",
-              sku: "BOWL-S",
+              title: "Blue Mixed Pattern",
+              sku: "PASTA-BOWL-BLUE-MIXED-PATTERN",
               options: {
-                Size: "Small",
+                Color: "Blue Mixed Pattern",
               },
               prices: [
                 {
-                  amount: 150,
+                  amount: 160,
                   currency_code: "ils",
-                },
-                {
-                  amount: 45,
-                  currency_code: "usd",
                 },
               ],
             },
             {
-              title: "Medium",
-              sku: "BOWL-M",
+              title: "Marine Mixed Pattern",
+              sku: "PASTA-BOWL-MARINE-MIXED-PATTERN",
               options: {
-                Size: "Medium",
+                Color: "Marine Mixed Pattern",
               },
               prices: [
                 {
-                  amount: 150,
+                  amount: 160,
                   currency_code: "ils",
-                },
-                {
-                  amount: 45,
-                  currency_code: "usd",
                 },
               ],
             },
             {
-              title: "Large",
-              sku: "BOWL-L",
+              title: "Pink Mixed Pattern",
+              sku: "PASTA-BOWL-PINK-MIXED-PATTERN",
               options: {
-                Size: "Large",
+                Color: "Pink Mixed Pattern",
               },
               prices: [
                 {
-                  amount: 150,
+                  amount: 160,
                   currency_code: "ils",
-                },
-                {
-                  amount: 45,
-                  currency_code: "usd",
                 },
               ],
             },
