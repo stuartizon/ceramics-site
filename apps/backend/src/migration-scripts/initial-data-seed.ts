@@ -1,3 +1,5 @@
+import { readFileSync } from "fs";
+import { join } from "path";
 import { MedusaContainer } from "@medusajs/framework";
 import {
   ContainerRegistrationKeys,
@@ -21,7 +23,12 @@ import {
   createTaxRegionsWorkflow,
   linkSalesChannelsToApiKeyWorkflow,
   linkSalesChannelsToStockLocationWorkflow,
+  uploadFilesWorkflow,
 } from "@medusajs/medusa/core-flows";
+
+// Dev/test fixture photos only - not the real production catalog images,
+// which admins will upload themselves through the admin dashboard.
+const SEED_IMAGES_DIR = join(__dirname, "seed-images");
 
 export default async function initial_data_seed({
   container,
@@ -338,7 +345,27 @@ export default async function initial_data_seed({
   const sizeOption = productOptionsResult.find((o) => o.title === "Size")!;
   const glazeOption = productOptionsResult.find((o) => o.title === "Glaze")!;
 
-  // No product images yet - add these once real product photography is available.
+  // Placeholder photography for the tea towel - see the SEED_IMAGES_DIR comment above.
+  // The other products have no images yet; add these once real photography is available.
+  const { result: teaTowelImageFiles } = await uploadFilesWorkflow(
+    container
+  ).run({
+    input: {
+      files: [
+        "floral-kingdom-tea-towel-1.jpg",
+        "floral-kingdom-tea-towel-2.jpg",
+        "floral-kingdom-tea-towel-3.jpg",
+      ].map((filename) => ({
+        filename,
+        mimeType: "image/jpeg",
+        content: readFileSync(join(SEED_IMAGES_DIR, filename)).toString(
+          "base64"
+        ),
+        access: "public",
+      })),
+    },
+  });
+
   await createProductsWorkflow(container).run({
     input: {
       products: [
@@ -531,6 +558,48 @@ export default async function initial_data_seed({
                 {
                   amount: 45,
                   currency_code: "usd",
+                },
+              ],
+            },
+          ],
+          sales_channels: [
+            {
+              id: defaultSalesChannel.id,
+            },
+          ],
+        },
+        {
+          title: "Floral Kingdom Tea Towel",
+          category_ids: [
+            categoryResult.find((cat) => cat.name === "Tea Towels")!.id,
+          ],
+          description:
+            "Our tea towels are lightweight, quick-drying, and full of charm. With vibrant prints, they add colour to the kitchen and personality to even the most practical of chores. Whether draped over the oven handle or laid under warm challah, they bring colour to the everyday.",
+          handle: "floral-kingdom-tea-towel",
+          material: "Cotton",
+          length: 46,
+          width: 65,
+          status: ProductStatus.PUBLISHED,
+          shipping_profile_id: shippingProfile.id,
+          thumbnail: teaTowelImageFiles[0].url,
+          images: teaTowelImageFiles.map((file) => ({ url: file.url })),
+          options: [
+            {
+              title: "Color",
+              values: ["White on Sage"],
+            },
+          ],
+          variants: [
+            {
+              title: "White on Sage",
+              sku: "TEATOWEL-FLORAL-KINGDOM-WHITE-SAGE",
+              options: {
+                Color: "White on Sage",
+              },
+              prices: [
+                {
+                  amount: 55,
+                  currency_code: "ils",
                 },
               ],
             },

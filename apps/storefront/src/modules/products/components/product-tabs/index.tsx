@@ -11,12 +11,36 @@ type ProductTabsProps = {
   product: HttpTypes.StoreProduct
 }
 
+const TEXTILE_CARE_INSTRUCTIONS = `Textile Care:
+Machine wash cold on a gentle cycle with like colours. Use mild detergent without optical brighteners. Avoid tumble drying to preserve colour. Turn inside out when possible. Cool iron only if needed.`
+
+const isTextileProduct = (product: HttpTypes.StoreProduct) =>
+  product.categories?.some(
+    (category) =>
+      category.name === "Textiles" ||
+      category.parent_category?.name === "Textiles"
+  ) ?? false
+
 const ProductTabs = ({ product }: ProductTabsProps) => {
+  const productInfoFields = getProductInfoFields(product)
+
   const tabs = [
-    {
-      label: "Product Information",
-      component: <ProductInfoTab product={product} />,
-    },
+    ...(productInfoFields.length
+      ? [
+          {
+            label: "Product Information",
+            component: <ProductInfoTab fields={productInfoFields} />,
+          },
+        ]
+      : []),
+    ...(isTextileProduct(product)
+      ? [
+          {
+            label: "Care Instructions",
+            component: <CareInstructionsTab />,
+          },
+        ]
+      : []),
     {
       label: "Shipping & Returns",
       component: <ShippingInfoTab />,
@@ -41,39 +65,48 @@ const ProductTabs = ({ product }: ProductTabsProps) => {
   )
 }
 
-const ProductInfoTab = ({ product }: ProductTabsProps) => {
+const formatDimensions = (product: HttpTypes.StoreProduct) => {
+  const parts = [
+    product.length ? `${product.length}L` : null,
+    product.width ? `${product.width}W` : null,
+    product.height ? `${product.height}H` : null,
+  ].filter(Boolean)
+
+  return parts.length ? parts.join(" x ") : null
+}
+
+type ProductInfoField = { label: string; value: string }
+
+const getProductInfoFields = (
+  product: HttpTypes.StoreProduct
+): ProductInfoField[] =>
+  [
+    { label: "Material", value: product.material },
+    { label: "Country of origin", value: product.origin_country },
+    { label: "Type", value: product.type?.value },
+    { label: "Weight", value: product.weight ? `${product.weight} g` : null },
+    { label: "Dimensions", value: formatDimensions(product) },
+  ].filter((field): field is ProductInfoField => Boolean(field.value))
+
+const ProductInfoTab = ({ fields }: { fields: ProductInfoField[] }) => {
   return (
     <div className="text-small-regular py-8">
-      <div className="grid grid-cols-2 gap-x-8">
-        <div className="flex flex-col gap-y-4">
-          <div>
-            <span className="font-semibold">Material</span>
-            <p>{product.material ? product.material : "-"}</p>
+      <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+        {fields.map((field) => (
+          <div key={field.label}>
+            <span className="font-semibold">{field.label}</span>
+            <p>{field.value}</p>
           </div>
-          <div>
-            <span className="font-semibold">Country of origin</span>
-            <p>{product.origin_country ? product.origin_country : "-"}</p>
-          </div>
-          <div>
-            <span className="font-semibold">Type</span>
-            <p>{product.type ? product.type.value : "-"}</p>
-          </div>
-        </div>
-        <div className="flex flex-col gap-y-4">
-          <div>
-            <span className="font-semibold">Weight</span>
-            <p>{product.weight ? `${product.weight} g` : "-"}</p>
-          </div>
-          <div>
-            <span className="font-semibold">Dimensions</span>
-            <p>
-              {product.length && product.width && product.height
-                ? `${product.length}L x ${product.width}W x ${product.height}H`
-                : "-"}
-            </p>
-          </div>
-        </div>
+        ))}
       </div>
+    </div>
+  )
+}
+
+const CareInstructionsTab = () => {
+  return (
+    <div className="text-small-regular py-8">
+      <p className="whitespace-pre-line">{TEXTILE_CARE_INSTRUCTIONS}</p>
     </div>
   )
 }
