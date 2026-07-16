@@ -75,5 +75,8 @@ module.exports = defineConfig({
         ],
       },
     },
+    {
+      resolve: './src/modules/bundle',
+    },
   ],
 })

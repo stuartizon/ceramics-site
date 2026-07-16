@@ -155,6 +155,46 @@ export async function addToCart({
     .catch(medusaError)
 }
 
+export async function addBundleToCart({
+  bundleId,
+  quantity,
+}: {
+  bundleId: string
+  quantity: number
+}) {
+  if (!bundleId) {
+    throw new Error("Missing bundle ID when adding to cart")
+  }
+
+  const cart = await getOrSetCart()
+
+  if (!cart) {
+    throw new Error("Error retrieving or creating cart")
+  }
+
+  const headers = {
+    ...(await getAuthHeaders()),
+  }
+
+  await sdk.client
+    .fetch(`/store/carts/${cart.id}/bundle-line-items`, {
+      method: "POST",
+      body: {
+        bundle_id: bundleId,
+        quantity,
+      },
+      headers,
+    })
+    .then(async () => {
+      const cartCacheTag = await getCacheTag("carts")
+      revalidateTag(cartCacheTag)
+
+      const fulfillmentCacheTag = await getCacheTag("fulfillment")
+      revalidateTag(fulfillmentCacheTag)
+    })
+    .catch(medusaError)
+}
+
 export async function updateLineItem({
   lineId,
   quantity,

@@ -7,6 +7,7 @@ import {
   Modules,
   ProductStatus,
 } from "@medusajs/framework/utils";
+import { BUNDLE_MODULE } from "../modules/bundle";
 import {
   createApiKeysWorkflow,
   createCollectionsWorkflow,
@@ -648,4 +649,32 @@ export default async function initial_data_seed({
   });
 
   logger.info("Finished seeding inventory levels data.");
+
+  logger.info("Seeding bundles.");
+
+  const bundleModuleService = container.resolve(BUNDLE_MODULE);
+
+  const { data: bundleProducts } = await query.graph({
+    entity: "product",
+    fields: ["id", "handle"],
+    filters: { handle: ["organic-pasta-bowl", "floral-kingdom-tea-towel"] },
+  });
+
+  const bundle = await bundleModuleService.createBundles({
+    handle: "bowl-and-towel-duo",
+    title: "Bowl & Towel Duo",
+    description:
+      "An organic pasta bowl paired with a Floral Kingdom tea towel.",
+    thumbnail: pastaBowlImageFiles[0].url,
+    status: "published",
+  });
+
+  for (const product of bundleProducts) {
+    await link.create({
+      [BUNDLE_MODULE]: { bundle_id: bundle.id },
+      [Modules.PRODUCT]: { product_id: product.id },
+    });
+  }
+
+  logger.info("Finished seeding bundles.");
 }
