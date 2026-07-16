@@ -80,37 +80,41 @@ export default async function Footer() {
               </div>
             )}
             <div className="flex flex-col gap-y-2">
-              <span className="txt-small-plus txt-ui-fg-base">Medusa</span>
+              <span className="txt-small-plus txt-ui-fg-base">
+                Customer Service
+              </span>
               <ul className="grid grid-cols-1 gap-y-2 text-ui-fg-subtle txt-small">
                 <li>
-                  <a
-                    href="https://github.com/medusajs"
-                    target="_blank"
-                    rel="noreferrer"
+                  <LocalizedClientLink
                     className="hover:text-ui-fg-base"
+                    href="/shipping-policy"
                   >
-                    GitHub
-                  </a>
+                    Shipping Policy
+                  </LocalizedClientLink>
                 </li>
                 <li>
-                  <a
-                    href="https://docs.medusajs.com"
-                    target="_blank"
-                    rel="noreferrer"
+                  <LocalizedClientLink
                     className="hover:text-ui-fg-base"
+                    href="/refund-policy"
                   >
-                    Documentation
-                  </a>
+                    Refund Policy
+                  </LocalizedClientLink>
                 </li>
                 <li>
-                  <a
-                    href="https://github.com/medusajs/dtc-starter"
-                    target="_blank"
-                    rel="noreferrer"
+                  <LocalizedClientLink
                     className="hover:text-ui-fg-base"
+                    href="/privacy-policy"
                   >
-                    Source code
-                  </a>
+                    Privacy Policy
+                  </LocalizedClientLink>
+                </li>
+                <li>
+                  <LocalizedClientLink
+                    className="hover:text-ui-fg-base"
+                    href="/terms-of-service"
+                  >
+                    Terms of Service
+                  </LocalizedClientLink>
                 </li>
               </ul>
             </div>
