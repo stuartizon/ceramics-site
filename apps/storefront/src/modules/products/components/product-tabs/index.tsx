@@ -11,18 +11,30 @@ type ProductTabsProps = {
   product: HttpTypes.StoreProduct
 }
 
-const TEXTILE_CARE_INSTRUCTIONS = `Textile Care:
-Machine wash cold on a gentle cycle with like colours. Use mild detergent without optical brighteners. Avoid tumble drying to preserve colour. Turn inside out when possible. Cool iron only if needed.`
+const CARE_INSTRUCTIONS_BY_CATEGORY: Record<string, string> = {
+  Textiles: `Textile Care:
+Machine wash cold on a gentle cycle with like colours. Use mild detergent without optical brighteners. Avoid tumble drying to preserve colour. Turn inside out when possible. Cool iron only if needed.`,
+  Ceramics:
+    "Dishwasher safe, oven warming safe. Not recommended for the microwave.",
+}
 
-const isTextileProduct = (product: HttpTypes.StoreProduct) =>
-  product.categories?.some(
-    (category) =>
-      category.name === "Textiles" ||
-      category.parent_category?.name === "Textiles"
-  ) ?? false
+const getCareInstructions = (product: HttpTypes.StoreProduct) => {
+  for (const category of product.categories ?? []) {
+    const instructions =
+      CARE_INSTRUCTIONS_BY_CATEGORY[category.name] ??
+      (category.parent_category
+        ? CARE_INSTRUCTIONS_BY_CATEGORY[category.parent_category.name]
+        : undefined)
+    if (instructions) {
+      return instructions
+    }
+  }
+  return null
+}
 
 const ProductTabs = ({ product }: ProductTabsProps) => {
   const productInfoFields = getProductInfoFields(product)
+  const careInstructions = getCareInstructions(product)
 
   const tabs = [
     ...(productInfoFields.length
@@ -33,11 +45,11 @@ const ProductTabs = ({ product }: ProductTabsProps) => {
           },
         ]
       : []),
-    ...(isTextileProduct(product)
+    ...(careInstructions
       ? [
           {
             label: "Care Instructions",
-            component: <CareInstructionsTab />,
+            component: <CareInstructionsTab instructions={careInstructions} />,
           },
         ]
       : []),
@@ -103,10 +115,10 @@ const ProductInfoTab = ({ fields }: { fields: ProductInfoField[] }) => {
   )
 }
 
-const CareInstructionsTab = () => {
+const CareInstructionsTab = ({ instructions }: { instructions: string }) => {
   return (
     <div className="text-small-regular py-8">
-      <p className="whitespace-pre-line">{TEXTILE_CARE_INSTRUCTIONS}</p>
+      <p className="whitespace-pre-line">{instructions}</p>
     </div>
   )
 }
