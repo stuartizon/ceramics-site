@@ -23,7 +23,20 @@ export default async function Footer() {
               Emma Ceramics
             </LocalizedClientLink>
           </div>
-          <div className="text-small-regular gap-10 md:gap-x-16 grid grid-cols-2 sm:grid-cols-3">
+          <div className="text-small-regular gap-10 md:gap-x-16 grid grid-cols-2 sm:grid-cols-4">
+            <div className="flex flex-col gap-y-2">
+              <span className="txt-small-plus txt-ui-fg-base">Info</span>
+              <ul className="grid grid-cols-1 gap-y-2 text-ui-fg-subtle txt-small">
+                <li>
+                  <LocalizedClientLink
+                    className="hover:text-ui-fg-base"
+                    href="/our-story"
+                  >
+                    Our Story
+                  </LocalizedClientLink>
+                </li>
+              </ul>
+            </div>
             {productCategories && productCategories?.length > 0 && (
               <div className="flex flex-col gap-y-2">
                 <span className="txt-small-plus txt-ui-fg-base">
