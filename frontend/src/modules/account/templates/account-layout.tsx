@@ -1,6 +1,6 @@
 import React from "react"
 
-import UnderlineLink from "@modules/common/components/interactive-link"
+import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
 import AccountNav from "../components/account-nav"
 import { HttpTypes } from "@medusajs/types"
@@ -30,9 +30,12 @@ const AccountLayout: React.FC<AccountLayoutProps> = ({
             </span>
           </div>
           <div>
-            <UnderlineLink href="/customer-service">
+            <LocalizedClientLink
+              href="/customer-service"
+              className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
+            >
               Customer Service
-            </UnderlineLink>
+            </LocalizedClientLink>
           </div>
         </div>
       </div>

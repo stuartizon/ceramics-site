@@ -1,7 +1,7 @@
 import { Metadata } from "next"
 import Image from "next/image"
 
-import InteractiveLink from "@modules/common/components/interactive-link"
+import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
 export const metadata: Metadata = {
   title: "404",
@@ -25,7 +25,12 @@ export default function NotFound() {
       <p className="text-small-regular text-ui-fg-base max-w-xs">
         We couldn't find the page you were looking for.
       </p>
-      <InteractiveLink href="/">Home</InteractiveLink>
+      <LocalizedClientLink
+        href="/"
+        className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
+      >
+        Home
+      </LocalizedClientLink>
     </div>
   )
 }
