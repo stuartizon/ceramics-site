@@ -108,7 +108,7 @@ const BundleDetailContent = ({ bundle }: { bundle: AdminBundle }) => {
 
   return (
     <div className="flex flex-col gap-y-4">
-      <Container className="flex flex-col gap-y-6 max-w-2xl">
+      <Container className="flex flex-col gap-y-6">
         <div className="flex items-center justify-between">
           <Heading level="h2">{bundle.title}</Heading>
           <IconButton
@@ -175,7 +175,7 @@ const BundleDetailContent = ({ bundle }: { bundle: AdminBundle }) => {
         </div>
       </Container>
 
-      <Container className="flex flex-col gap-y-4 max-w-2xl">
+      <Container className="flex flex-col gap-y-4">
         <div className="flex items-center justify-between">
           <Heading level="h2">Products</Heading>
           <Button

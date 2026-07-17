@@ -53,7 +53,7 @@ const CreateBundlePage = () => {
   })
 
   return (
-    <Container className="flex flex-col gap-y-6 max-w-2xl">
+    <Container className="flex flex-col gap-y-6">
       <Heading level="h2">Create bundle</Heading>
 
       <div className="flex flex-col gap-y-2">
