@@ -1,4 +1,5 @@
 import { Metadata } from "next"
+import Image from "next/image"
 
 import InteractiveLink from "@modules/common/components/interactive-link"
 
@@ -9,12 +10,22 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
-    <div className="flex flex-col gap-4 items-center justify-center min-h-[calc(100vh-64px)]">
-      <h1 className="text-2xl-semi text-ui-fg-base">Page not found</h1>
-      <p className="text-small-regular text-ui-fg-base">
-        The page you tried to access does not exist.
+    <div className="flex flex-col gap-4 items-center justify-center min-h-[calc(100vh-64px)] text-center">
+      <h1 className="text-2xl-semi text-ui-fg-base">Oops, we dropped that one</h1>
+      <div className="relative aspect-[4/3] w-full max-w-md">
+        <Image
+          src="/images/errors/broken-plate.jpg"
+          alt="A shattered ceramic plate lying in pieces on a wooden floor"
+          fill
+          className="object-cover object-center"
+          sizes="448px"
+          priority
+        />
+      </div>
+      <p className="text-small-regular text-ui-fg-base max-w-xs">
+        We couldn't find the page you were looking for.
       </p>
-      <InteractiveLink href="/">Go to frontpage</InteractiveLink>
+      <InteractiveLink href="/">Home</InteractiveLink>
     </div>
   )
 }
