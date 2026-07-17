@@ -2,7 +2,7 @@ import { listProducts } from "@lib/data/products"
 import { HttpTypes } from "@medusajs/types"
 import { Text } from "@modules/common/components/ui"
 
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import Link from "next/link"
 import ProductPreview from "@modules/products/components/product-preview"
 
 export default async function ProductRail({
@@ -30,12 +30,12 @@ export default async function ProductRail({
     <div className="content-container py-12 small:py-24">
       <div className="flex justify-between mb-8">
         <Text className="txt-xlarge">{collection.title}</Text>
-        <LocalizedClientLink
+        <Link
           href={`/collections/${collection.handle}`}
           className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
         >
           View all
-        </LocalizedClientLink>
+        </Link>
       </div>
       <ul className="grid grid-cols-2 small:grid-cols-3 gap-x-6 gap-y-24 small:gap-y-36">
         {pricedProducts &&

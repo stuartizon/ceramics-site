@@ -2,7 +2,7 @@ import Image from "next/image"
 
 import { listCategories } from "@lib/data/categories"
 import { Text } from "@modules/common/components/ui"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import Link from "next/link"
 import PlaceholderImage from "@modules/common/icons/placeholder-image"
 
 export default async function CategoryGrid() {
@@ -26,7 +26,7 @@ export default async function CategoryGrid() {
 
           return (
             <li key={category.id}>
-              <LocalizedClientLink
+              <Link
                 href={`/categories/${category.handle}`}
                 className="group block overflow-hidden rounded-large shadow-elevation-card-rest transition-shadow duration-150 hover:shadow-elevation-card-hover"
                 data-testid="category-grid-link"
@@ -51,7 +51,7 @@ export default async function CategoryGrid() {
                     {category.name}
                   </Text>
                 </div>
-              </LocalizedClientLink>
+              </Link>
             </li>
           )
         })}

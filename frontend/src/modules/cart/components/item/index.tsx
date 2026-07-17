@@ -9,7 +9,7 @@ import DeleteButton from "@modules/common/components/delete-button"
 import LineItemOptions from "@modules/common/components/line-item-options"
 import LineItemPrice from "@modules/common/components/line-item-price"
 import LineItemUnitPrice from "@modules/common/components/line-item-unit-price"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import Link from "next/link"
 import Spinner from "@modules/common/icons/spinner"
 import Thumbnail from "@modules/products/components/thumbnail"
 import { useState } from "react"
@@ -47,7 +47,7 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
   return (
     <Table.Row className="w-full" data-testid="product-row">
       <Table.Cell className="!pl-0 p-4 w-24">
-        <LocalizedClientLink
+        <Link
           href={`/products/${item.product_handle}`}
           className={clx("flex", {
             "w-16": type === "preview",
@@ -59,7 +59,7 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
             images={item.variant?.product?.images}
             size="square"
           />
-        </LocalizedClientLink>
+        </Link>
       </Table.Cell>
 
       <Table.Cell className="text-left">

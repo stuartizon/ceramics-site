@@ -1,7 +1,7 @@
 import { Container } from "@modules/common/components/ui"
 
 import ChevronDown from "@modules/common/icons/chevron-down"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import Link from "next/link"
 import { convertToLocale } from "@lib/util/money"
 import { HttpTypes } from "@medusajs/types"
 
@@ -81,7 +81,7 @@ const Overview = ({ customer, orders }: OverviewProps) => {
                         data-testid="order-wrapper"
                         data-value={order.id}
                       >
-                        <LocalizedClientLink
+                        <Link
                           href={`/account/orders/details/${order.id}`}
                         >
                           <Container className="bg-gray-50 flex justify-between items-center p-4">
@@ -119,7 +119,7 @@ const Overview = ({ customer, orders }: OverviewProps) => {
                               <ChevronDown className="-rotate-90" />
                             </button>
                           </Container>
-                        </LocalizedClientLink>
+                        </Link>
                       </li>
                     )
                   })

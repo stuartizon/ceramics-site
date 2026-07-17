@@ -3,7 +3,7 @@ import { Suspense } from "react"
 import { listLocales } from "@lib/data/locales"
 import { getLocale } from "@lib/data/locale-actions"
 import { ShoppingCart, User } from "@medusajs/icons"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import Link from "next/link"
 import CartButton from "@modules/layout/components/cart-button"
 import SideMenu from "@modules/layout/components/side-menu"
 
@@ -28,49 +28,49 @@ export default async function Nav() {
             <div className="h-full small:hidden">
               <SideMenu locales={locales} currentLocale={currentLocale} />
             </div>
-            <LocalizedClientLink
+            <Link
               href="/"
               className="font-serif text-xl tracking-wide hover:text-ui-fg-base uppercase"
               data-testid="nav-store-link"
             >
               Emma Ceramics
-            </LocalizedClientLink>
+            </Link>
           </div>
 
           <div className="hidden small:flex items-center gap-x-8 h-full">
             {TopNavLinks.map((link) => (
-              <LocalizedClientLink
+              <Link
                 key={link.href}
                 href={link.href}
                 className="hover:text-ui-fg-base text-sm tracking-wide uppercase"
                 data-testid={`nav-${link.label.toLowerCase().replace(/\s+/g, "-")}-link`}
               >
                 {link.label}
-              </LocalizedClientLink>
+              </Link>
             ))}
           </div>
 
           <div className="flex items-center gap-x-6 h-full flex-1 basis-0 justify-end">
             <div className="hidden small:flex items-center gap-x-6 h-full">
-              <LocalizedClientLink
+              <Link
                 className="hover:text-ui-fg-base"
                 href="/account"
                 data-testid="nav-account-link"
               >
                 <span className="sr-only">Account</span>
                 <User />
-              </LocalizedClientLink>
+              </Link>
             </div>
             <Suspense
               fallback={
-                <LocalizedClientLink
+                <Link
                   className="hover:text-ui-fg-base relative flex"
                   href="/cart"
                   data-testid="nav-cart-link"
                 >
                   <span className="sr-only">Cart</span>
                   <ShoppingCart />
-                </LocalizedClientLink>
+                </Link>
               }
             >
               <CartButton />

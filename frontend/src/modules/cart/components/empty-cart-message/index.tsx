@@ -1,6 +1,6 @@
 import { Heading, Text } from "@modules/common/components/ui"
 
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import Link from "next/link"
 
 const EmptyCartMessage = () => {
   return (
@@ -16,12 +16,12 @@ const EmptyCartMessage = () => {
         the link below to start browsing our products.
       </Text>
       <div>
-        <LocalizedClientLink
+        <Link
           href="/store"
           className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
         >
           Explore products
-        </LocalizedClientLink>
+        </Link>
       </div>
     </div>
   )

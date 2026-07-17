@@ -1,6 +1,6 @@
 import Image from "next/image"
 
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import Link from "next/link"
 import { Button, Heading, Text } from "@modules/common/components/ui"
 
 const OurStoryTemplate = () => {
@@ -97,11 +97,11 @@ const OurStoryTemplate = () => {
           Browse the full collection and find a piece that feels like it was
           made for your home.
         </Text>
-        <LocalizedClientLink href="/store">
+        <Link href="/store">
           <Button variant="primary" size="large">
             Shop the Collection
           </Button>
-        </LocalizedClientLink>
+        </Link>
       </div>
     </>
   )

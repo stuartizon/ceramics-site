@@ -3,7 +3,7 @@
 import { Button } from "@modules/common/components/ui"
 
 import OrderCard from "../order-card"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import Link from "next/link"
 import { HttpTypes } from "@medusajs/types"
 
 const OrderOverview = ({ orders }: { orders: HttpTypes.StoreOrder[] }) => {
@@ -32,11 +32,11 @@ const OrderOverview = ({ orders }: { orders: HttpTypes.StoreOrder[] }) => {
         You don&apos;t have any orders yet, let us change that {":)"}
       </p>
       <div className="mt-4">
-        <LocalizedClientLink href="/" passHref>
+        <Link href="/">
           <Button data-testid="continue-shopping-button">
             Continue shopping
           </Button>
-        </LocalizedClientLink>
+        </Link>
       </div>
     </div>
   )

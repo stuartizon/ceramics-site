@@ -2,7 +2,7 @@ import { listCategories } from "@lib/data/categories";
 import { listCollections } from "@lib/data/collections";
 import { Text, clx } from "@modules/common/components/ui";
 
-import LocalizedClientLink from "@modules/common/components/localized-client-link";
+import Link from "next/link"
 import MedusaCTA from "@modules/layout/components/medusa-cta";
 
 export default async function Footer() {
@@ -16,24 +16,24 @@ export default async function Footer() {
       <div className="content-container flex flex-col w-full">
         <div className="flex flex-col gap-y-6 xsmall:flex-row items-start justify-between py-16">
           <div>
-            <LocalizedClientLink
+            <Link
               href="/"
               className="font-serif text-xl tracking-wide text-ui-fg-subtle hover:text-ui-fg-base uppercase"
             >
               Emma Ceramics
-            </LocalizedClientLink>
+            </Link>
           </div>
           <div className="text-small-regular gap-10 md:gap-x-16 grid grid-cols-2 sm:grid-cols-4">
             <div className="flex flex-col gap-y-2">
               <span className="txt-small-plus txt-ui-fg-base">Info</span>
               <ul className="grid grid-cols-1 gap-y-2 text-ui-fg-subtle txt-small">
                 <li>
-                  <LocalizedClientLink
+                  <Link
                     className="hover:text-ui-fg-base"
                     href="/our-story"
                   >
                     Our Story
-                  </LocalizedClientLink>
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -54,13 +54,13 @@ export default async function Footer() {
                         className="flex flex-col gap-2 text-ui-fg-subtle txt-small"
                         key={c.id}
                       >
-                        <LocalizedClientLink
+                        <Link
                           className="hover:text-ui-fg-base"
                           href={`/categories/${c.handle}`}
                           data-testid="category-link"
                         >
                           {c.name}
-                        </LocalizedClientLink>
+                        </Link>
                       </li>
                     ))}
                 </ul>
@@ -81,12 +81,12 @@ export default async function Footer() {
                 >
                   {collections?.slice(0, 6).map((c) => (
                     <li key={c.id}>
-                      <LocalizedClientLink
+                      <Link
                         className="hover:text-ui-fg-base"
                         href={`/collections/${c.handle}`}
                       >
                         {c.title}
-                      </LocalizedClientLink>
+                      </Link>
                     </li>
                   ))}
                 </ul>
@@ -98,36 +98,36 @@ export default async function Footer() {
               </span>
               <ul className="grid grid-cols-1 gap-y-2 text-ui-fg-subtle txt-small">
                 <li>
-                  <LocalizedClientLink
+                  <Link
                     className="hover:text-ui-fg-base"
                     href="/shipping-policy"
                   >
                     Shipping Policy
-                  </LocalizedClientLink>
+                  </Link>
                 </li>
                 <li>
-                  <LocalizedClientLink
+                  <Link
                     className="hover:text-ui-fg-base"
                     href="/refund-policy"
                   >
                     Refund Policy
-                  </LocalizedClientLink>
+                  </Link>
                 </li>
                 <li>
-                  <LocalizedClientLink
+                  <Link
                     className="hover:text-ui-fg-base"
                     href="/privacy-policy"
                   >
                     Privacy Policy
-                  </LocalizedClientLink>
+                  </Link>
                 </li>
                 <li>
-                  <LocalizedClientLink
+                  <Link
                     className="hover:text-ui-fg-base"
                     href="/terms-of-service"
                   >
                     Terms of Service
-                  </LocalizedClientLink>
+                  </Link>
                 </li>
               </ul>
             </div>

@@ -1,6 +1,6 @@
 import { listBundles } from "@lib/data/bundles"
 import { Text } from "@modules/common/components/ui"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import Link from "next/link"
 import Thumbnail from "@modules/products/components/thumbnail"
 
 export default async function GiftCombosTemplate() {
@@ -25,7 +25,7 @@ export default async function GiftCombosTemplate() {
         <ul className="grid grid-cols-2 small:grid-cols-3 medium:grid-cols-4 gap-x-6 gap-y-8">
           {bundles.map((bundle) => (
             <li key={bundle.id}>
-              <LocalizedClientLink
+              <Link
                 href={`/gift-combos/${bundle.handle}`}
                 className="group"
               >
@@ -42,7 +42,7 @@ export default async function GiftCombosTemplate() {
                     {bundle.title}
                   </Text>
                 </div>
-              </LocalizedClientLink>
+              </Link>
             </li>
           ))}
         </ul>

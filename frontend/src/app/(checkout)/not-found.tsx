@@ -1,6 +1,6 @@
 import { Metadata } from "next"
 
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import Link from "next/link"
 
 export const metadata: Metadata = {
   title: "404",
@@ -14,12 +14,12 @@ export default async function NotFound() {
       <p className="text-small-regular text-ui-fg-base">
         The page you tried to access does not exist.
       </p>
-      <LocalizedClientLink
+      <Link
         href="/"
         className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
       >
         Go to frontpage
-      </LocalizedClientLink>
+      </Link>
     </div>
   )
 }

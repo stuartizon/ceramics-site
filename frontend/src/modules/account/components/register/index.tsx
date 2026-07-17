@@ -5,7 +5,7 @@ import Input from "@modules/common/components/input"
 import { LOGIN_VIEW } from "@modules/account/templates/login-template"
 import ErrorMessage from "@modules/checkout/components/error-message"
 import { SubmitButton } from "@modules/checkout/components/submit-button"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import Link from "next/link"
 import { signup } from "@lib/data/customer"
 
 type Props = {
@@ -82,19 +82,19 @@ const Register = ({ setCurrentView }: Props) => {
         />
         <span className="text-center text-ui-fg-base text-small-regular mt-6">
           By creating an account, you agree to Emma Ceramics&apos;{" "}
-          <LocalizedClientLink
+          <Link
             href="/content/privacy-policy"
             className="underline"
           >
             Privacy Policy
-          </LocalizedClientLink>{" "}
+          </Link>{" "}
           and{" "}
-          <LocalizedClientLink
+          <Link
             href="/content/terms-of-use"
             className="underline"
           >
             Terms of Use
-          </LocalizedClientLink>
+          </Link>
           .
         </span>
         <SubmitButton className="w-full mt-6" data-testid="register-button">

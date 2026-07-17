@@ -3,7 +3,7 @@
 import { Popover, PopoverPanel, Transition } from "@headlessui/react"
 import useToggleState from "@lib/hooks/use-toggle-state"
 import { ArrowRightMini, XMark } from "@medusajs/icons"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import Link from "next/link"
 import { Text, clx } from "@modules/common/components/ui"
 import { Fragment } from "react"
 import LanguageSelect from "../language-select"
@@ -72,14 +72,14 @@ const SideMenu = ({ locales, currentLocale }: SideMenuProps) => {
                       {Object.entries(SideMenuItems).map(([name, href]) => {
                         return (
                           <li key={name}>
-                            <LocalizedClientLink
+                            <Link
                               href={href}
                               className="text-3xl leading-10 hover:text-ui-fg-disabled"
                               onClick={close}
                               data-testid={`${name.toLowerCase()}-link`}
                             >
                               {name}
-                            </LocalizedClientLink>
+                            </Link>
                           </li>
                         )
                       })}
