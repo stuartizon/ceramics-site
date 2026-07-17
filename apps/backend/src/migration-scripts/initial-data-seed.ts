@@ -381,6 +381,12 @@ export default async function initial_data_seed({
     "organic-pasta-bowl-1.jpg",
     "organic-pasta-bowl-2.jpg",
   ]);
+  const bowlAndTowelDuoImageFiles = await uploadSeedImages(container, [
+    "bowl-and-towel-duo-1.jpg",
+    "bowl-and-towel-duo-2.jpg",
+    "bowl-and-towel-duo-3.jpg",
+    "bowl-and-towel-duo-4.jpg",
+  ]);
 
   await createProductsWorkflow(container).run({
     input: {
@@ -665,9 +671,17 @@ export default async function initial_data_seed({
     title: "Bowl & Towel Duo",
     description:
       "An organic pasta bowl paired with a Floral Kingdom tea towel.",
-    thumbnail: pastaBowlImageFiles[0].url,
+    thumbnail: bowlAndTowelDuoImageFiles[0].url,
     status: "published",
   });
+
+  for (const [index, file] of bowlAndTowelDuoImageFiles.entries()) {
+    await bundleModuleService.createBundleImages({
+      url: file.url,
+      rank: index,
+      bundle_id: bundle.id,
+    });
+  }
 
   for (const product of bundleProducts) {
     await link.create({
