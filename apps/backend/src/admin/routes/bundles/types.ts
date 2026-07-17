@@ -5,6 +5,12 @@ export type AdminBundleProduct = {
   thumbnail?: string | null
 }
 
+export type AdminBundleImage = {
+  id: string
+  url: string
+  rank: number
+}
+
 export type AdminBundle = {
   id: string
   handle: string
@@ -13,4 +19,5 @@ export type AdminBundle = {
   thumbnail: string | null
   status: "draft" | "published"
   products: AdminBundleProduct[]
+  images: AdminBundleImage[]
 }

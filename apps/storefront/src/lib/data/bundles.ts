@@ -13,6 +13,7 @@ export type StoreBundle = {
   thumbnail: string | null
   status: string
   products: { id: string; handle: string }[]
+  images: { id: string; url: string; rank: number }[]
 }
 
 export const listBundles = async (): Promise<StoreBundle[]> => {

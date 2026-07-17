@@ -15,6 +15,9 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
       "status",
       "products.id",
       "products.handle",
+      "images.id",
+      "images.url",
+      "images.rank",
     ],
     filters: { status: "published" },
   })

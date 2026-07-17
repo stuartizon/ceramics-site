@@ -19,6 +19,9 @@ import { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { sdk } from "../../../lib/sdk"
 import { AdminBundle } from "../types"
+import BundleMediaSection, {
+  BundleMediaImage,
+} from "../components/bundle-media-section"
 
 const BundleDetailPage = () => {
   const { id } = useParams()
@@ -48,7 +51,8 @@ const BundleDetailContent = ({ bundle }: { bundle: AdminBundle }) => {
   const [title, setTitle] = useState(bundle.title)
   const [handle, setHandle] = useState(bundle.handle)
   const [description, setDescription] = useState(bundle.description ?? "")
-  const [thumbnail, setThumbnail] = useState(bundle.thumbnail ?? "")
+  const [images, setImages] = useState<BundleMediaImage[]>(bundle.images)
+  const [thumbnail, setThumbnail] = useState(bundle.thumbnail)
   const [status, setStatus] = useState(bundle.status)
   const [deletePromptOpen, setDeletePromptOpen] = useState(false)
   const [addProductsOpen, setAddProductsOpen] = useState(false)
@@ -64,8 +68,9 @@ const BundleDetailContent = ({ bundle }: { bundle: AdminBundle }) => {
           title,
           handle,
           description: description || null,
-          thumbnail: thumbnail || null,
+          thumbnail,
           status,
+          images,
         },
       }),
     onSuccess: () => {
@@ -140,11 +145,14 @@ const BundleDetailContent = ({ bundle }: { bundle: AdminBundle }) => {
         </div>
 
         <div className="flex flex-col gap-y-2">
-          <Label htmlFor="thumbnail">Thumbnail URL</Label>
-          <Input
-            id="thumbnail"
-            value={thumbnail}
-            onChange={(e) => setThumbnail(e.target.value)}
+          <Label>Media</Label>
+          <BundleMediaSection
+            images={images}
+            thumbnail={thumbnail}
+            onChange={(nextImages, nextThumbnail) => {
+              setImages(nextImages)
+              setThumbnail(nextThumbnail)
+            }}
           />
         </div>
 

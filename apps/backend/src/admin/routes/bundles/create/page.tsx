@@ -13,6 +13,9 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { sdk } from "../../../lib/sdk"
 import { AdminBundle } from "../types"
+import BundleMediaSection, {
+  BundleMediaImage,
+} from "../components/bundle-media-section"
 
 const slugify = (value: string) =>
   value
@@ -28,7 +31,8 @@ const CreateBundlePage = () => {
   const [handle, setHandle] = useState("")
   const [handleEdited, setHandleEdited] = useState(false)
   const [description, setDescription] = useState("")
-  const [thumbnail, setThumbnail] = useState("")
+  const [images, setImages] = useState<BundleMediaImage[]>([])
+  const [thumbnail, setThumbnail] = useState<string | null>(null)
   const [status, setStatus] = useState<"draft" | "published">("draft")
 
   const { mutate, isPending } = useMutation({
@@ -39,8 +43,9 @@ const CreateBundlePage = () => {
           title,
           handle,
           description: description || null,
-          thumbnail: thumbnail || null,
+          thumbnail,
           status,
+          images,
         },
       }),
     onSuccess: ({ bundle }) => {
@@ -92,11 +97,14 @@ const CreateBundlePage = () => {
       </div>
 
       <div className="flex flex-col gap-y-2">
-        <Label htmlFor="thumbnail">Thumbnail URL</Label>
-        <Input
-          id="thumbnail"
-          value={thumbnail}
-          onChange={(e) => setThumbnail(e.target.value)}
+        <Label>Media</Label>
+        <BundleMediaSection
+          images={images}
+          thumbnail={thumbnail}
+          onChange={(nextImages, nextThumbnail) => {
+            setImages(nextImages)
+            setThumbnail(nextThumbnail)
+          }}
         />
       </div>
 

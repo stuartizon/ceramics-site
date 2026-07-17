@@ -5,6 +5,7 @@ import { getProductPrice } from "@lib/util/get-product-price"
 import { convertToLocale } from "@lib/util/money"
 import { Heading, Text } from "@modules/common/components/ui"
 import Thumbnail from "@modules/products/components/thumbnail"
+import ImageGallery from "@modules/products/components/image-gallery"
 import ProductPreview from "@modules/products/components/product-preview"
 import GiftComboActions from "@modules/gift-combos/components/gift-combo-actions"
 
@@ -44,7 +45,13 @@ export default function GiftComboDetailTemplate({
       data-testid="gift-combo-container"
     >
       <div className="block w-full small:max-w-[500px] relative">
-        <Thumbnail thumbnail={bundle.thumbnail} images={null} size="full" />
+        {bundle.images.length > 0 ? (
+          <ImageGallery
+            images={[...bundle.images].sort((a, b) => a.rank - b.rank)}
+          />
+        ) : (
+          <Thumbnail thumbnail={bundle.thumbnail} images={null} size="full" />
+        )}
       </div>
 
       <div className="flex flex-col small:sticky small:top-48 small:py-0 w-full py-8 gap-y-6">

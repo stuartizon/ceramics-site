@@ -8,6 +8,7 @@ type PostBundleBody = {
   description?: string | null
   thumbnail?: string | null
   status?: "draft" | "published"
+  images?: { id?: string; url: string }[]
 }
 
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
@@ -27,6 +28,9 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
       "products.title",
       "products.handle",
       "products.thumbnail",
+      "images.id",
+      "images.url",
+      "images.rank",
     ],
     filters: { id },
   })
@@ -46,14 +50,71 @@ export async function POST(
   res: MedusaResponse
 ) {
   const { id } = req.params
+  const { images, ...bundleData } = req.body
   const bundleModuleService = req.scope.resolve(BUNDLE_MODULE)
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
-  const bundle = await bundleModuleService.updateBundles({
-    id,
-    ...req.body,
+  await bundleModuleService.updateBundles({ id, ...bundleData })
+
+  if (images) {
+    const { data: existingBundles } = await query.graph({
+      entity: "bundle",
+      fields: ["id", "images.id"],
+      filters: { id },
+    })
+
+    const existingImageIds = (existingBundles[0]?.images ?? [])
+      .filter((image): image is NonNullable<typeof image> => !!image)
+      .map((image) => image.id)
+    const incomingImageIds = images
+      .filter((image) => image.id)
+      .map((image) => image.id as string)
+
+    const imageIdsToDelete = existingImageIds.filter(
+      (imageId) => !incomingImageIds.includes(imageId)
+    )
+    if (imageIdsToDelete.length) {
+      await bundleModuleService.deleteBundleImages(imageIdsToDelete)
+    }
+
+    for (const [index, image] of images.entries()) {
+      if (image.id) {
+        await bundleModuleService.updateBundleImages({
+          id: image.id,
+          url: image.url,
+          rank: index,
+        })
+      } else {
+        await bundleModuleService.createBundleImages({
+          url: image.url,
+          rank: index,
+          bundle_id: id,
+        })
+      }
+    }
+  }
+
+  const { data: bundles } = await query.graph({
+    entity: "bundle",
+    fields: [
+      "id",
+      "handle",
+      "title",
+      "description",
+      "thumbnail",
+      "status",
+      "products.id",
+      "products.title",
+      "products.handle",
+      "products.thumbnail",
+      "images.id",
+      "images.url",
+      "images.rank",
+    ],
+    filters: { id },
   })
 
-  res.json({ bundle })
+  res.json({ bundle: bundles[0] })
 }
 
 export async function DELETE(req: MedusaRequest, res: MedusaResponse) {
@@ -64,7 +125,7 @@ export async function DELETE(req: MedusaRequest, res: MedusaResponse) {
 
   const { data: bundles } = await query.graph({
     entity: "bundle",
-    fields: ["id", "products.id"],
+    fields: ["id", "products.id", "images.id"],
     filters: { id },
   })
 
@@ -78,6 +139,14 @@ export async function DELETE(req: MedusaRequest, res: MedusaResponse) {
           [BUNDLE_MODULE]: { bundle_id: id },
           [Modules.PRODUCT]: { product_id: product.id },
         }))
+    )
+  }
+
+  if (bundle?.images?.length) {
+    await bundleModuleService.deleteBundleImages(
+      bundle.images
+        .filter((image): image is NonNullable<typeof image> => !!image)
+        .map((image) => image.id)
     )
   }
 
