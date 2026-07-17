@@ -1,9 +1,10 @@
 {
-  "name": "@dtc/backend",
+  "name": "@ceramics-site/backend",
   "version": "0.0.1",
-  "description": "A starter for Medusa projects.",
-  "author": "Medusa (https://medusajs.com)",
+  "description": "Medusa backend for the ceramics/fabrics ecommerce site.",
+  "author": "Stuart Izon",
   "license": "MIT",
+  "private": true,
   "keywords": [
     "sqlite",
     "postgres",
