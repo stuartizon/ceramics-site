@@ -52,7 +52,7 @@ const ImageGallery = ({ images }: ImageGalleryProps) => {
       {/* Desktop: main image with thumbnail strip */}
       <div className="hidden small:flex small:flex-col gap-y-4">
         <Container
-          className="relative aspect-[29/34] w-full overflow-hidden bg-ui-bg-subtle"
+          className="relative aspect-square w-full overflow-hidden bg-ui-bg-subtle"
           id={selectedImage.id}
         >
           {!!selectedImage.url && (

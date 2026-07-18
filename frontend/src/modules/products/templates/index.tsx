@@ -30,29 +30,42 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
   return (
     <>
       <div
-        className="content-container  flex flex-col small:flex-row small:items-start py-6 relative"
+        className="content-container flex flex-col small:flex-row small:gap-x-16 medium:gap-x-24 gap-y-10 px-6 small:px-24 medium:px-36 large:px-48 py-6 relative"
         data-testid="product-container"
       >
-        <div className="flex flex-col small:sticky small:top-48 small:py-0 small:max-w-[300px] w-full py-8 gap-y-6">
-          <ProductInfo product={product} />
+        {/* Mobile only: name/description above the images */}
+        <div className="w-full small:hidden">
+          <ProductInfo product={product} primary={false} />
+        </div>
+
+        <div className="w-full min-w-0 relative small:basis-0 small:grow-[3] small:shrink-0">
+          <div className="small:sticky small:top-16">
+            <ImageGallery images={images} />
+          </div>
+        </div>
+
+        {/* Desktop only: name/description, actions and info tabs stacked in their own column, independent of the image's height */}
+        <div className="flex flex-col gap-y-10 w-full min-w-0 small:basis-0 small:grow-[2] small:shrink-0 small:self-start">
+          <div className="hidden small:block">
+            <ProductInfo product={product} />
+          </div>
+
+          <div className="flex flex-col gap-y-6">
+            <ProductOnboardingCta />
+            <Suspense
+              fallback={
+                <ProductActions
+                  disabled={true}
+                  product={product}
+                  region={region}
+                />
+              }
+            >
+              <ProductActionsWrapper id={product.id} region={region} />
+            </Suspense>
+          </div>
+
           <ProductTabs product={product} />
-        </div>
-        <div className="block w-full min-w-0 relative">
-          <ImageGallery images={images} />
-        </div>
-        <div className="flex flex-col small:sticky small:top-48 small:py-0 small:max-w-[300px] w-full py-8 gap-y-12">
-          <ProductOnboardingCta />
-          <Suspense
-            fallback={
-              <ProductActions
-                disabled={true}
-                product={product}
-                region={region}
-              />
-            }
-          >
-            <ProductActionsWrapper id={product.id} region={region} />
-          </Suspense>
         </div>
       </div>
       <div
