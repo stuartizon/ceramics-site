@@ -1,6 +1,10 @@
+"use client"
+
 import { HttpTypes } from "@medusajs/types"
 import { Heading, Text } from "@modules/common/components/ui"
 import Link from "next/link"
+import ProductPrice from "@modules/products/components/product-price"
+import { useSelectedVariantId } from "@modules/products/context/selected-variant-context"
 
 type ProductInfoProps = {
   product: HttpTypes.StoreProduct
@@ -11,6 +15,8 @@ type ProductInfoProps = {
 }
 
 const ProductInfo = ({ product, primary = true }: ProductInfoProps) => {
+  const { selectedVariantId } = useSelectedVariantId()
+
   return (
     <div id={primary ? "product-info" : undefined}>
       <div className="flex flex-col gap-y-4 max-w-[500px]">
@@ -29,6 +35,8 @@ const ProductInfo = ({ product, primary = true }: ProductInfoProps) => {
         >
           {product.title}
         </Heading>
+
+        <ProductPrice product={product} variantId={selectedVariantId} />
 
         <Text
           className="text-medium text-ui-fg-subtle whitespace-pre-line"

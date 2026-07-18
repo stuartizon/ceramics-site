@@ -5,17 +5,17 @@ import { HttpTypes } from "@medusajs/types"
 
 export default function ProductPrice({
   product,
-  variant,
+  variantId,
 }: {
   product: HttpTypes.StoreProduct
-  variant?: HttpTypes.StoreProductVariant
+  variantId?: string
 }) {
   const { cheapestPrice, variantPrice } = getProductPrice({
     product,
-    variantId: variant?.id,
+    variantId,
   })
 
-  const selectedPrice = variant ? variantPrice : cheapestPrice
+  const selectedPrice = variantId ? variantPrice : cheapestPrice
 
   if (!selectedPrice) {
     return <div className="block w-32 h-9 bg-gray-100 animate-pulse" />
@@ -28,7 +28,7 @@ export default function ProductPrice({
           "text-ui-fg-interactive": selectedPrice.price_type === "sale",
         })}
       >
-        {!variant && "From "}
+        {!variantId && "From "}
         <span
           data-testid="product-price"
           data-value={selectedPrice.calculated_price_number}

@@ -42,6 +42,12 @@ export default function GiftComboDetailTemplate({
 
   const images = [...bundle.images].sort((a, b) => a.rank - b.rank)
 
+  const priceDisplay = combinedTotal && (
+    <div className="flex flex-col text-ui-fg-base">
+      <span className="text-xl-semi">{combinedTotal}</span>
+    </div>
+  )
+
   return (
     <div
       className="content-container flex flex-col small:flex-row small:gap-x-16 medium:gap-x-24 gap-y-10 px-6 small:px-24 medium:px-36 large:px-48 py-6 relative"
@@ -52,6 +58,7 @@ export default function GiftComboDetailTemplate({
         <Heading level="h2" className="text-3xl leading-10 text-ui-fg-base">
           {bundle.title}
         </Heading>
+        {priceDisplay}
         {bundle.description && (
           <Text className="text-medium text-ui-fg-subtle whitespace-pre-line">
             {bundle.description}
@@ -75,6 +82,7 @@ export default function GiftComboDetailTemplate({
           <Heading level="h2" className="text-3xl leading-10 text-ui-fg-base">
             {bundle.title}
           </Heading>
+          {priceDisplay}
           {bundle.description && (
             <Text className="text-medium text-ui-fg-subtle whitespace-pre-line">
               {bundle.description}
@@ -93,12 +101,6 @@ export default function GiftComboDetailTemplate({
               ))}
             </ul>
           </div>
-
-          {combinedTotal && (
-            <div className="flex flex-col text-ui-fg-base">
-              <span className="text-xl-semi">{combinedTotal}</span>
-            </div>
-          )}
 
           <GiftComboActions
             bundleId={bundle.id}

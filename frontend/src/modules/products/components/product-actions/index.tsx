@@ -9,9 +9,9 @@ import OptionSelect from "@modules/products/components/product-actions/option-se
 import { isEqual } from "lodash"
 import { usePathname, useSearchParams } from "next/navigation"
 import { useEffect, useMemo, useRef, useState } from "react"
-import ProductPrice from "../product-price"
 import MobileActions from "./mobile-actions"
 import { useRouter } from "next/navigation"
+import { useSelectedVariantId } from "@modules/products/context/selected-variant-context"
 
 type ProductActionsProps = {
   product: HttpTypes.StoreProduct
@@ -38,6 +38,7 @@ export default function ProductActions({
 
   const [options, setOptions] = useState<Record<string, string | undefined>>({})
   const [isAdding, setIsAdding] = useState(false)
+  const { setSelectedVariantId } = useSelectedVariantId()
 
   // If there is only 1 variant, preselect the options
   useEffect(() => {
@@ -90,6 +91,10 @@ export default function ProductActions({
 
     router.replace(pathname + "?" + params.toString())
   }, [selectedVariant, isValidVariant])
+
+  useEffect(() => {
+    setSelectedVariantId(selectedVariant?.id)
+  }, [selectedVariant, setSelectedVariantId])
 
   // check if the selected variant is in stock
   const inStock = useMemo(() => {
@@ -157,8 +162,6 @@ export default function ProductActions({
             </div>
           )}
         </div>
-
-        <ProductPrice product={product} variant={selectedVariant} />
 
         <Button
           onClick={handleAddToCart}
