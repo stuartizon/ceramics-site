@@ -11,6 +11,7 @@ type AccordionItemProps = AccordionPrimitive.AccordionItemProps & {
   forceMountContent?: true
   headingSize?: "small" | "medium" | "large"
   customTrigger?: React.ReactNode
+  icon?: React.ReactNode
   complete?: boolean
   active?: boolean
   triggerable?: boolean
@@ -39,6 +40,7 @@ const Item: React.FC<AccordionItemProps> = ({
   className,
   headingSize: _headingSize = "large",
   customTrigger = undefined,
+  icon = undefined,
   forceMountContent = undefined,
   triggerable: _triggerable,
   ...props
@@ -55,7 +57,10 @@ const Item: React.FC<AccordionItemProps> = ({
       <AccordionPrimitive.Header className="px-1">
         <div className="flex flex-col">
           <AccordionPrimitive.Trigger className="flex w-full items-center justify-between bg-transparent text-left">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              {icon && (
+                <span className="text-ui-fg-subtle">{icon}</span>
+              )}
               <Text className="text-ui-fg-subtle text-sm">{title}</Text>
             </div>
             {customTrigger || <MorphingTrigger />}

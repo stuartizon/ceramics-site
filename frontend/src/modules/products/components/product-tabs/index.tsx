@@ -3,6 +3,9 @@
 import Back from "@modules/common/icons/back"
 import FastDelivery from "@modules/common/icons/fast-delivery"
 import Refresh from "@modules/common/icons/refresh"
+import Ruler from "@modules/common/icons/ruler"
+import WashingMachine from "@modules/common/icons/washing-machine"
+import Yarn from "@modules/common/icons/yarn"
 
 import Accordion from "./accordion"
 import { HttpTypes } from "@medusajs/types"
@@ -40,6 +43,7 @@ const ProductTabs = ({ product }: ProductTabsProps) => {
       ? [
           {
             label: "Dimensions",
+            icon: <Ruler size={20} />,
             component: <DimensionsTab dimensions={dimensions} />,
           },
         ]
@@ -48,6 +52,7 @@ const ProductTabs = ({ product }: ProductTabsProps) => {
       ? [
           {
             label: "Material",
+            icon: <Yarn size={20} />,
             component: <MaterialTab material={product.material} />,
           },
         ]
@@ -56,12 +61,14 @@ const ProductTabs = ({ product }: ProductTabsProps) => {
       ? [
           {
             label: "Care",
+            icon: <WashingMachine size={20} />,
             component: <CareInstructionsTab instructions={careInstructions} />,
           },
         ]
       : []),
     {
       label: "Shipping",
+      icon: <FastDelivery size={20} />,
       component: <ShippingInfoTab />,
     },
   ]
@@ -73,6 +80,7 @@ const ProductTabs = ({ product }: ProductTabsProps) => {
           <Accordion.Item
             key={i}
             title={tab.label}
+            icon={tab.icon}
             headingSize="medium"
             value={tab.label}
           >
