@@ -4,6 +4,7 @@ import {
   ProductStatus,
 } from "@medusajs/framework/utils";
 import {
+  batchVariantImagesWorkflow,
   createProductCategoriesWorkflow,
   createProductOptionsWorkflow,
   createProductsWorkflow,
@@ -101,10 +102,14 @@ export default async function productCatalog({
   // Placeholder photography for the tea towel and pasta bowl - see the
   // seed-images comment in utils/seed-images.ts. The other products have no
   // images yet; add these once real photography is available.
-  const teaTowelImageFiles = await uploadSeedImages(container, [
-    "floral-kingdom-tea-towel-1.jpg",
-    "floral-kingdom-tea-towel-2.jpg",
-    "floral-kingdom-tea-towel-3.jpg",
+  const teaTowelWhiteOnSageImageFiles = await uploadSeedImages(container, [
+    "floral-kingdom-tea-towel-white-on-sage-1.jpg",
+    "floral-kingdom-tea-towel-white-on-sage-2.jpg",
+    "floral-kingdom-tea-towel-white-on-sage-3.jpg",
+  ]);
+  const teaTowelSageOnWhiteImageFiles = await uploadSeedImages(container, [
+    "floral-kingdom-tea-towel-sage-on-white-1.jpg",
+    "floral-kingdom-tea-towel-sage-on-white-2.jpg",
   ]);
   const pastaBowlImageFiles = await uploadSeedImages(container, [
     "organic-pasta-bowl-1.jpg",
@@ -326,12 +331,15 @@ export default async function productCatalog({
           width: 65,
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
-          thumbnail: teaTowelImageFiles[0].url,
-          images: teaTowelImageFiles.map((file) => ({ url: file.url })),
+          thumbnail: teaTowelWhiteOnSageImageFiles[0].url,
+          images: [
+            ...teaTowelWhiteOnSageImageFiles,
+            ...teaTowelSageOnWhiteImageFiles,
+          ].map((file) => ({ url: file.url })),
           options: [
             {
               title: "Color",
-              values: ["White on Sage"],
+              values: ["White on Sage", "Sage on White"],
             },
           ],
           variants: [
@@ -340,6 +348,19 @@ export default async function productCatalog({
               sku: "TEATOWEL-FLORAL-KINGDOM-WHITE-SAGE",
               options: {
                 Color: "White on Sage",
+              },
+              prices: [
+                {
+                  amount: 55,
+                  currency_code: "ils",
+                },
+              ],
+            },
+            {
+              title: "Sage on White",
+              sku: "TEATOWEL-FLORAL-KINGDOM-SAGE-WHITE",
+              options: {
+                Color: "Sage on White",
               },
               prices: [
                 {
@@ -358,5 +379,35 @@ export default async function productCatalog({
       ],
     },
   });
+
+  // Link each tea towel color to its own photos so the storefront's color
+  // switcher shows the matching variant instead of falling back to the
+  // full shared gallery.
+  const { data: teaTowelProductResult } = await query.graph({
+    entity: "product",
+    fields: ["id", "images.id", "images.url", "variants.id", "variants.title"],
+    filters: { handle: "floral-kingdom-tea-towel" },
+  });
+  const teaTowelProduct = teaTowelProductResult[0];
+  const imageIdsByUrl = new Map(
+    teaTowelProduct.images.map((image) => [image.url, image.id])
+  );
+  const teaTowelVariantImageFiles: Record<
+    string,
+    typeof teaTowelWhiteOnSageImageFiles
+  > = {
+    "White on Sage": teaTowelWhiteOnSageImageFiles,
+    "Sage on White": teaTowelSageOnWhiteImageFiles,
+  };
+  for (const variant of teaTowelProduct.variants) {
+    const imageFiles = teaTowelVariantImageFiles[variant.title];
+    await batchVariantImagesWorkflow(container).run({
+      input: {
+        variant_id: variant.id,
+        add: imageFiles.map((file) => imageIdsByUrl.get(file.url)!),
+      },
+    });
+  }
+
   logger.info("Finished seeding product data.");
 }
