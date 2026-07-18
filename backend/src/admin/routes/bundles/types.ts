@@ -11,6 +11,18 @@ export type AdminBundleImage = {
   rank: number
 }
 
+export type AdminBundleThemeItem = {
+  product_id: string
+  variant_id: string
+}
+
+export type AdminBundleTheme = {
+  id: string
+  name: string
+  rank: number
+  items: AdminBundleThemeItem[]
+}
+
 export type AdminBundle = {
   id: string
   handle: string
@@ -20,4 +32,5 @@ export type AdminBundle = {
   status: "draft" | "published"
   products: AdminBundleProduct[]
   images: AdminBundleImage[]
+  themes: AdminBundleTheme[]
 }

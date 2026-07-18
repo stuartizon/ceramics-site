@@ -42,6 +42,11 @@ export default function GiftComboDetailTemplate({
 
   const images = [...bundle.images].sort((a, b) => a.rank - b.rank)
 
+  const defaultTheme = [...bundle.themes].sort((a, b) => a.rank - b.rank)[0]
+  const variantIdByProduct = new Map(
+    defaultTheme?.items.map((item) => [item.product_id, item.variant_id])
+  )
+
   const priceDisplay = combinedTotal && (
     <div className="flex flex-col text-ui-fg-base">
       <span className="text-xl-semi">{combinedTotal}</span>
@@ -96,7 +101,10 @@ export default function GiftComboDetailTemplate({
             <ul className="flex flex-col gap-y-3">
               {products.map((product) => (
                 <li key={product.id}>
-                  <BundleProductRow product={product} />
+                  <BundleProductRow
+                    product={product}
+                    selectedVariantId={variantIdByProduct.get(product.id)}
+                  />
                 </li>
               ))}
             </ul>
@@ -104,6 +112,7 @@ export default function GiftComboDetailTemplate({
 
           <GiftComboActions
             bundleId={bundle.id}
+            themeId={defaultTheme?.id}
             disabled={products.length === 0}
           />
         </div>

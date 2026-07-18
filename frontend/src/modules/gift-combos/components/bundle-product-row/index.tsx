@@ -1,5 +1,6 @@
 import { Text } from "@modules/common/components/ui"
 import { getProductPrice } from "@lib/util/get-product-price"
+import { getImagesForVariant } from "@lib/util/get-images-for-variant"
 import { HttpTypes } from "@medusajs/types"
 import Image from "next/image"
 import Link from "next/link"
@@ -8,11 +9,19 @@ import PreviewPrice from "@modules/products/components/product-preview/price"
 
 type BundleProductRowProps = {
   product: HttpTypes.StoreProduct
+  selectedVariantId?: string
 }
 
-export default function BundleProductRow({ product }: BundleProductRowProps) {
+export default function BundleProductRow({
+  product,
+  selectedVariantId,
+}: BundleProductRowProps) {
   const { cheapestPrice } = getProductPrice({ product })
-  const image = product.thumbnail || product.images?.[0]?.url
+  const variantImages = getImagesForVariant(product, selectedVariantId)
+  const image =
+    (selectedVariantId && variantImages?.[0]?.url) ||
+    product.thumbnail ||
+    product.images?.[0]?.url
 
   return (
     <Link

@@ -27,7 +27,7 @@ export default async function bundle({
 
   const { data: bundleProducts } = await query.graph({
     entity: "product",
-    fields: ["id", "handle"],
+    fields: ["id", "handle", "variants.id"],
     filters: { handle: ["organic-pasta-bowl", "floral-kingdom-tea-towel"] },
   });
 
@@ -54,6 +54,18 @@ export default async function bundle({
       [Modules.PRODUCT]: { product_id: product.id },
     });
   }
+
+  await bundleModuleService.createBundleThemes({
+    bundle_id: bundle.id,
+    name: "Default",
+    rank: 0,
+    items: bundleProducts
+      .filter((product) => product.variants?.length)
+      .map((product) => ({
+        product_id: product.id,
+        variant_id: product.variants![0].id,
+      })) as unknown as Record<string, unknown>,
+  });
 
   logger.info("Finished seeding bundles.");
 }

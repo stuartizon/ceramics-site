@@ -5,6 +5,18 @@ import { HttpTypes } from "@medusajs/types"
 import { getAuthHeaders, getCacheOptions } from "./cookies"
 import { listProducts } from "./products"
 
+export type StoreBundleThemeItem = {
+  product_id: string
+  variant_id: string
+}
+
+export type StoreBundleTheme = {
+  id: string
+  name: string
+  rank: number
+  items: StoreBundleThemeItem[]
+}
+
 export type StoreBundle = {
   id: string
   handle: string
@@ -14,6 +26,7 @@ export type StoreBundle = {
   status: string
   products: { id: string; handle: string }[]
   images: { id: string; url: string; rank: number }[]
+  themes: StoreBundleTheme[]
 }
 
 export const listBundles = async (): Promise<StoreBundle[]> => {

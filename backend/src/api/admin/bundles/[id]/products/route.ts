@@ -7,6 +7,8 @@ type PostBundleProductsBody = {
   remove?: string[]
 }
 
+type BundleThemeItem = { product_id: string; variant_id: string }
+
 export async function POST(
   req: MedusaRequest<PostBundleProductsBody>,
   res: MedusaResponse
@@ -16,6 +18,7 @@ export async function POST(
 
   const link = req.scope.resolve(ContainerRegistrationKeys.LINK)
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+  const bundleModuleService = req.scope.resolve(BUNDLE_MODULE)
 
   if (add.length) {
     await link.create(
@@ -33,6 +36,28 @@ export async function POST(
         [Modules.PRODUCT]: { product_id: productId },
       }))
     )
+
+    const { data: themeBundles } = await query.graph({
+      entity: "bundle",
+      fields: ["id", "themes.id", "themes.items"],
+      filters: { id },
+    })
+
+    for (const theme of themeBundles[0]?.themes ?? []) {
+      if (!theme) continue
+
+      const items = (theme.items ?? []) as unknown as BundleThemeItem[]
+      const filteredItems = items.filter(
+        (item) => !remove.includes(item.product_id)
+      )
+
+      if (filteredItems.length !== items.length) {
+        await bundleModuleService.updateBundleThemes({
+          id: theme.id,
+          items: filteredItems as unknown as Record<string, unknown>,
+        })
+      }
+    }
   }
 
   const { data: bundles } = await query.graph({
@@ -48,6 +73,10 @@ export async function POST(
       "products.title",
       "products.handle",
       "products.thumbnail",
+      "themes.id",
+      "themes.name",
+      "themes.rank",
+      "themes.items",
     ],
     filters: { id },
   })

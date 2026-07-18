@@ -6,11 +6,13 @@ import { Button } from "@modules/common/components/ui"
 
 type GiftComboActionsProps = {
   bundleId: string
+  themeId?: string
   disabled?: boolean
 }
 
 export default function GiftComboActions({
   bundleId,
+  themeId,
   disabled,
 }: GiftComboActionsProps) {
   const [isAdding, setIsAdding] = useState(false)
@@ -20,6 +22,7 @@ export default function GiftComboActions({
 
     await addBundleToCart({
       bundleId,
+      themeId,
       quantity: 1,
     })
 

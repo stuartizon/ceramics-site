@@ -1,4 +1,4 @@
-import { Plus, Trash } from "@medusajs/icons"
+import { PencilSquare, Plus, Trash } from "@medusajs/icons"
 import {
   Button,
   Checkbox,
@@ -14,11 +14,12 @@ import {
   Textarea,
   toast,
 } from "@medusajs/ui"
+import { HttpTypes } from "@medusajs/types"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { sdk } from "../../../lib/sdk"
-import { AdminBundle } from "../types"
+import { AdminBundle, AdminBundleProduct, AdminBundleTheme } from "../types"
 import BundleMediaSection, {
   BundleMediaImage,
 } from "../components/bundle-media-section"
@@ -56,9 +57,30 @@ const BundleDetailContent = ({ bundle }: { bundle: AdminBundle }) => {
   const [status, setStatus] = useState(bundle.status)
   const [deletePromptOpen, setDeletePromptOpen] = useState(false)
   const [addProductsOpen, setAddProductsOpen] = useState(false)
+  const [themeDrawer, setThemeDrawer] = useState<{
+    open: boolean
+    theme: AdminBundleTheme | null
+  }>({ open: false, theme: null })
 
   const invalidateBundle = () =>
     queryClient.invalidateQueries({ queryKey: ["bundle", bundle.id] })
+
+  const productIds = bundle.products.map((product) => product.id)
+
+  const { data: productsWithVariantsData } = useQuery({
+    queryKey: ["bundle-theme-products", bundle.id, productIds.join(",")],
+    queryFn: () =>
+      sdk.admin.product.list({ id: productIds, fields: "id,title,*variants" }),
+    enabled: productIds.length > 0,
+  })
+  const productsWithVariants = productsWithVariantsData?.products ?? []
+
+  const getVariantLabel = (productId: string, variantId: string) => {
+    const variant = productsWithVariants
+      .find((product) => product.id === productId)
+      ?.variants?.find((v) => v.id === variantId)
+    return variant?.title ?? "Unknown variant"
+  }
 
   const { mutate: save, isPending: isSaving } = useMutation({
     mutationFn: () =>
@@ -101,6 +123,20 @@ const BundleDetailContent = ({ bundle }: { bundle: AdminBundle }) => {
       sdk.client.fetch(`/admin/bundles/${bundle.id}/products`, {
         method: "POST",
         body: { remove: [productId] },
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["bundles"] })
+      invalidateBundle()
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Something went wrong")
+    },
+  })
+
+  const { mutate: deleteTheme } = useMutation({
+    mutationFn: (themeId: string) =>
+      sdk.client.fetch(`/admin/bundles/${bundle.id}/themes/${themeId}`, {
+        method: "DELETE",
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["bundles"] })
@@ -235,6 +271,75 @@ const BundleDetailContent = ({ bundle }: { bundle: AdminBundle }) => {
         )}
       </Container>
 
+      <Container className="flex flex-col gap-y-4">
+        <div className="flex items-center justify-between">
+          <Heading level="h2">Themes</Heading>
+          <Button
+            size="small"
+            variant="secondary"
+            onClick={() => setThemeDrawer({ open: true, theme: null })}
+            disabled={bundle.products.length === 0}
+            data-testid="add-theme-button"
+          >
+            <Plus /> Add theme
+          </Button>
+        </div>
+
+        {bundle.products.length === 0 ? (
+          <Text className="text-ui-fg-subtle">
+            Add products before creating a theme.
+          </Text>
+        ) : bundle.themes.length === 0 ? (
+          <Text className="text-ui-fg-subtle">No themes yet.</Text>
+        ) : (
+          <ul className="flex flex-col gap-y-2">
+            {[...bundle.themes]
+              .sort((a, b) => a.rank - b.rank)
+              .map((theme) => (
+                <li
+                  key={theme.id}
+                  className="flex items-center justify-between border-ui-border-base rounded-md border px-4 py-2"
+                >
+                  <div className="flex flex-col gap-y-1">
+                    <Text size="small" weight="plus">
+                      {theme.name}
+                    </Text>
+                    <Text size="small" className="text-ui-fg-subtle">
+                      {theme.items
+                        .map((item) => {
+                          const product = bundle.products.find(
+                            (p) => p.id === item.product_id
+                          )
+                          return `${product?.title ?? "Unknown product"}: ${getVariantLabel(
+                            item.product_id,
+                            item.variant_id
+                          )}`
+                        })
+                        .join(" · ")}
+                    </Text>
+                  </div>
+                  <div className="flex items-center gap-x-1">
+                    <IconButton
+                      variant="transparent"
+                      onClick={() => setThemeDrawer({ open: true, theme })}
+                      data-testid="edit-theme-button"
+                    >
+                      <PencilSquare />
+                    </IconButton>
+                    <IconButton
+                      variant="transparent"
+                      onClick={() => deleteTheme(theme.id)}
+                      data-testid="remove-theme-button"
+                    >
+                      <Trash />
+                    </IconButton>
+                  </div>
+                </li>
+              ))}
+          </ul>
+        )}
+      </Container>
+
       <Prompt open={deletePromptOpen} onOpenChange={setDeletePromptOpen}>
         <Prompt.Content>
           <Prompt.Header>
@@ -263,6 +368,19 @@ const BundleDetailContent = ({ bundle }: { bundle: AdminBundle }) => {
         open={addProductsOpen}
         onOpenChange={setAddProductsOpen}
         onAdded={() => {
+          queryClient.invalidateQueries({ queryKey: ["bundles"] })
+          invalidateBundle()
+        }}
+      />
+
+      <ThemeDrawer
+        bundleId={bundle.id}
+        products={bundle.products}
+        productsWithVariants={productsWithVariants}
+        theme={themeDrawer.theme}
+        open={themeDrawer.open}
+        onOpenChange={(open) => setThemeDrawer((prev) => ({ ...prev, open }))}
+        onSaved={() => {
           queryClient.invalidateQueries({ queryKey: ["bundles"] })
           invalidateBundle()
         }}
@@ -363,6 +481,144 @@ const AddProductsDrawer = ({
             data-testid="confirm-add-products-button"
           >
             Add {selectedIds.length > 0 ? selectedIds.length : ""}
+          </Button>
+        </Drawer.Footer>
+      </Drawer.Content>
+    </Drawer>
+  )
+}
+
+const ThemeDrawer = ({
+  bundleId,
+  products,
+  productsWithVariants,
+  theme,
+  open,
+  onOpenChange,
+  onSaved,
+}: {
+  bundleId: string
+  products: AdminBundleProduct[]
+  productsWithVariants: HttpTypes.AdminProduct[]
+  theme: AdminBundleTheme | null
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onSaved: () => void
+}) => {
+  const [name, setName] = useState("")
+  const [selections, setSelections] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    if (!open) {
+      return
+    }
+
+    setName(theme?.name ?? "")
+
+    const initial: Record<string, string> = {}
+    for (const product of products) {
+      const existingVariantId = theme?.items.find(
+        (item) => item.product_id === product.id
+      )?.variant_id
+      const fallbackVariantId = productsWithVariants.find(
+        (p) => p.id === product.id
+      )?.variants?.[0]?.id
+
+      const variantId = existingVariantId ?? fallbackVariantId
+      if (variantId) {
+        initial[product.id] = variantId
+      }
+    }
+    setSelections(initial)
+  }, [open, theme, products, productsWithVariants])
+
+  const { mutate: save, isPending } = useMutation({
+    mutationFn: () => {
+      const items = products
+        .filter((product) => selections[product.id])
+        .map((product) => ({
+          product_id: product.id,
+          variant_id: selections[product.id],
+        }))
+
+      const path = theme
+        ? `/admin/bundles/${bundleId}/themes/${theme.id}`
+        : `/admin/bundles/${bundleId}/themes`
+
+      return sdk.client.fetch(path, {
+        method: "POST",
+        body: { name, items },
+      })
+    },
+    onSuccess: () => {
+      toast.success(theme ? "Theme updated" : "Theme added")
+      onOpenChange(false)
+      onSaved()
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Something went wrong")
+    },
+  })
+
+  const missingSelection = products.some((product) => !selections[product.id])
+
+  return (
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <Drawer.Content>
+        <Drawer.Header>
+          <Drawer.Title>{theme ? "Edit theme" : "Add theme"}</Drawer.Title>
+        </Drawer.Header>
+        <Drawer.Body className="flex flex-col gap-y-4">
+          <div className="flex flex-col gap-y-2">
+            <Label htmlFor="theme-name">Name</Label>
+            <Input
+              id="theme-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. Sage"
+            />
+          </div>
+
+          {products.map((product) => {
+            const variants =
+              productsWithVariants.find((p) => p.id === product.id)?.variants ??
+              []
+
+            return (
+              <div key={product.id} className="flex flex-col gap-y-2">
+                <Label>{product.title}</Label>
+                <Select
+                  value={selections[product.id]}
+                  onValueChange={(value) =>
+                    setSelections((prev) => ({ ...prev, [product.id]: value }))
+                  }
+                >
+                  <Select.Trigger>
+                    <Select.Value placeholder="Choose a variant" />
+                  </Select.Trigger>
+                  <Select.Content>
+                    {variants.map((variant) => (
+                      <Select.Item key={variant.id} value={variant.id}>
+                        {variant.title}
+                      </Select.Item>
+                    ))}
+                  </Select.Content>
+                </Select>
+              </div>
+            )
+          })}
+        </Drawer.Body>
+        <Drawer.Footer>
+          <Button variant="secondary" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
+          <Button
+            onClick={() => save()}
+            disabled={!name || missingSelection || isPending}
+            isLoading={isPending}
+            data-testid="confirm-save-theme-button"
+          >
+            Save
           </Button>
         </Drawer.Footer>
       </Drawer.Content>

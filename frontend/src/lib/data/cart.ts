@@ -157,9 +157,11 @@ export async function addToCart({
 
 export async function addBundleToCart({
   bundleId,
+  themeId,
   quantity,
 }: {
   bundleId: string
+  themeId?: string
   quantity: number
 }) {
   if (!bundleId) {
@@ -181,6 +183,7 @@ export async function addBundleToCart({
       method: "POST",
       body: {
         bundle_id: bundleId,
+        theme_id: themeId,
         quantity,
       },
       headers,
