@@ -12,8 +12,7 @@ type ProductTabsProps = {
 }
 
 const CARE_INSTRUCTIONS_BY_CATEGORY: Record<string, string> = {
-  Textiles: `Textile Care:
-Machine wash cold on a gentle cycle with like colours. Use mild detergent without optical brighteners. Avoid tumble drying to preserve colour. Turn inside out when possible. Cool iron only if needed.`,
+  Textiles: `Machine wash cold on a gentle cycle with like colours. Use mild detergent without optical brighteners. Avoid tumble drying to preserve colour. Turn inside out when possible. Cool iron only if needed.`,
   Ceramics:
     "Dishwasher safe, oven warming safe. Not recommended for the microwave.",
 }
@@ -33,28 +32,36 @@ const getCareInstructions = (product: HttpTypes.StoreProduct) => {
 }
 
 const ProductTabs = ({ product }: ProductTabsProps) => {
-  const productInfoFields = getProductInfoFields(product)
+  const dimensions = formatDimensions(product)
   const careInstructions = getCareInstructions(product)
 
   const tabs = [
-    ...(productInfoFields.length
+    ...(dimensions
       ? [
           {
-            label: "Product Information",
-            component: <ProductInfoTab fields={productInfoFields} />,
+            label: "Dimensions",
+            component: <DimensionsTab dimensions={dimensions} />,
+          },
+        ]
+      : []),
+    ...(product.material
+      ? [
+          {
+            label: "Material",
+            component: <MaterialTab material={product.material} />,
           },
         ]
       : []),
     ...(careInstructions
       ? [
           {
-            label: "Care Instructions",
+            label: "Care",
             component: <CareInstructionsTab instructions={careInstructions} />,
           },
         ]
       : []),
     {
-      label: "Shipping & Returns",
+      label: "Shipping",
       component: <ShippingInfoTab />,
     },
   ]
@@ -79,38 +86,26 @@ const ProductTabs = ({ product }: ProductTabsProps) => {
 
 const formatDimensions = (product: HttpTypes.StoreProduct) => {
   const parts = [
-    product.length ? `${product.length}L` : null,
-    product.width ? `${product.width}W` : null,
-    product.height ? `${product.height}H` : null,
+    product.length ? `${product.length}cm (L)` : null,
+    product.width ? `${product.width}cm (W)` : null,
+    product.height ? `${product.height}cm (H)` : null,
   ].filter(Boolean)
 
   return parts.length ? parts.join(" x ") : null
 }
 
-type ProductInfoField = { label: string; value: string }
-
-const getProductInfoFields = (
-  product: HttpTypes.StoreProduct
-): ProductInfoField[] =>
-  [
-    { label: "Material", value: product.material },
-    { label: "Country of origin", value: product.origin_country },
-    { label: "Type", value: product.type?.value },
-    { label: "Weight", value: product.weight ? `${product.weight} g` : null },
-    { label: "Dimensions", value: formatDimensions(product) },
-  ].filter((field): field is ProductInfoField => Boolean(field.value))
-
-const ProductInfoTab = ({ fields }: { fields: ProductInfoField[] }) => {
+const DimensionsTab = ({ dimensions }: { dimensions: string }) => {
   return (
     <div className="text-small-regular py-8">
-      <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-        {fields.map((field) => (
-          <div key={field.label}>
-            <span className="font-semibold">{field.label}</span>
-            <p>{field.value}</p>
-          </div>
-        ))}
-      </div>
+      <p>{dimensions}</p>
+    </div>
+  )
+}
+
+const MaterialTab = ({ material }: { material: string }) => {
+  return (
+    <div className="text-small-regular py-8">
+      <p>{material}</p>
     </div>
   )
 }
