@@ -13,7 +13,7 @@ WORKDIR /build
 COPY package.json package-lock.json ./
 COPY backend/package.json backend/package.json
 COPY frontend/package.json frontend/package.json
-RUN --mount=type=cache,target=/root/.npm \
+RUN --mount=type=cache,id=npm,target=/root/.npm \
     npm ci --workspace=backend
 
 COPY backend backend
@@ -28,7 +28,8 @@ WORKDIR /server
 ENV NODE_ENV=production
 
 COPY --from=build /build/backend/.medusa/server .
-RUN npm install --omit=dev
+RUN --mount=type=cache,id=npm,target=/root/.npm \
+    npm install --omit=dev --no-audit --no-fund --prefer-offline
 
 EXPOSE 9000
 CMD ["npm", "run", "start"]
