@@ -6,8 +6,9 @@ import { convertToLocale } from "@lib/util/money"
 import { Heading, Text } from "@modules/common/components/ui"
 import Thumbnail from "@modules/products/components/thumbnail"
 import ImageGallery from "@modules/products/components/image-gallery"
-import ProductPreview from "@modules/products/components/product-preview"
 import GiftComboActions from "@modules/gift-combos/components/gift-combo-actions"
+import GiftComboTabs from "@modules/gift-combos/components/gift-combo-tabs"
+import BundleProductRow from "@modules/gift-combos/components/bundle-product-row"
 
 type GiftComboDetailTemplateProps = {
   bundle: StoreBundle
@@ -18,7 +19,7 @@ type GiftComboDetailTemplateProps = {
 export default function GiftComboDetailTemplate({
   bundle,
   products,
-  region,
+  region: _region,
 }: GiftComboDetailTemplateProps) {
   if (!bundle) {
     return notFound()
@@ -39,23 +40,38 @@ export default function GiftComboDetailTemplate({
         })
       : null
 
+  const images = [...bundle.images].sort((a, b) => a.rank - b.rank)
+
   return (
     <div
-      className="content-container flex flex-col small:flex-row small:items-start py-6 relative gap-x-12"
+      className="content-container flex flex-col small:flex-row small:gap-x-16 medium:gap-x-24 gap-y-10 px-6 small:px-24 medium:px-36 large:px-48 py-6 relative"
       data-testid="gift-combo-container"
     >
-      <div className="block w-full min-w-0 small:max-w-[500px] relative">
-        {bundle.images.length > 0 ? (
-          <ImageGallery
-            images={[...bundle.images].sort((a, b) => a.rank - b.rank)}
-          />
-        ) : (
-          <Thumbnail thumbnail={bundle.thumbnail} images={null} size="full" />
+      {/* Mobile only: name/description above the images */}
+      <div className="w-full small:hidden flex flex-col gap-y-4">
+        <Heading level="h2" className="text-3xl leading-10 text-ui-fg-base">
+          {bundle.title}
+        </Heading>
+        {bundle.description && (
+          <Text className="text-medium text-ui-fg-subtle whitespace-pre-line">
+            {bundle.description}
+          </Text>
         )}
       </div>
 
-      <div className="flex flex-col small:sticky small:top-48 small:py-0 w-full py-8 gap-y-6">
-        <div className="flex flex-col gap-y-4">
+      <div className="w-full min-w-0 relative small:basis-0 small:grow-[3] small:shrink-0">
+        <div className="small:sticky small:top-16">
+          {images.length > 0 ? (
+            <ImageGallery images={images} />
+          ) : (
+            <Thumbnail thumbnail={bundle.thumbnail} images={null} size="full" />
+          )}
+        </div>
+      </div>
+
+      {/* Desktop only: name/description, included products, actions and info tabs stacked in their own column */}
+      <div className="flex flex-col gap-y-10 w-full min-w-0 small:basis-0 small:grow-[2] small:shrink-0 small:self-start">
+        <div className="hidden small:flex flex-col gap-y-4 max-w-[500px]">
           <Heading level="h2" className="text-3xl leading-10 text-ui-fg-base">
             {bundle.title}
           </Heading>
@@ -66,24 +82,31 @@ export default function GiftComboDetailTemplate({
           )}
         </div>
 
-        <div className="flex flex-col gap-y-4">
-          <Text className="text-ui-fg-subtle">Included in this combo</Text>
-          <ul className="grid grid-cols-2 gap-x-6 gap-y-8">
-            {products.map((product) => (
-              <li key={product.id}>
-                <ProductPreview product={product} region={region} />
-              </li>
-            ))}
-          </ul>
+        <div className="flex flex-col gap-y-6">
+          <div className="flex flex-col gap-y-3">
+            <Text className="text-ui-fg-subtle">Included in this combo:</Text>
+            <ul className="flex flex-col gap-y-3">
+              {products.map((product) => (
+                <li key={product.id}>
+                  <BundleProductRow product={product} />
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {combinedTotal && (
+            <div className="flex flex-col text-ui-fg-base">
+              <span className="text-xl-semi">{combinedTotal}</span>
+            </div>
+          )}
+
+          <GiftComboActions
+            bundleId={bundle.id}
+            disabled={products.length === 0}
+          />
         </div>
 
-        {combinedTotal && (
-          <Text className="text-xl-semi text-ui-fg-base">
-            {combinedTotal}
-          </Text>
-        )}
-
-        <GiftComboActions bundleId={bundle.id} disabled={products.length === 0} />
+        <GiftComboTabs products={products} />
       </div>
     </div>
   )

@@ -9,29 +9,11 @@ import Yarn from "@modules/common/icons/yarn"
 
 import Accordion from "./accordion"
 import { HttpTypes } from "@medusajs/types"
+import { getCareInstructions } from "@lib/util/care-instructions"
+import { formatDimensions } from "@lib/util/format-dimensions"
 
 type ProductTabsProps = {
   product: HttpTypes.StoreProduct
-}
-
-const CARE_INSTRUCTIONS_BY_CATEGORY: Record<string, string> = {
-  Textiles: `Machine wash cold on a gentle cycle with like colours. Use mild detergent without optical brighteners. Avoid tumble drying to preserve colour. Turn inside out when possible. Cool iron only if needed.`,
-  Ceramics:
-    "Dishwasher safe, oven warming safe. Not recommended for the microwave.",
-}
-
-const getCareInstructions = (product: HttpTypes.StoreProduct) => {
-  for (const category of product.categories ?? []) {
-    const instructions =
-      CARE_INSTRUCTIONS_BY_CATEGORY[category.name] ??
-      (category.parent_category
-        ? CARE_INSTRUCTIONS_BY_CATEGORY[category.parent_category.name]
-        : undefined)
-    if (instructions) {
-      return instructions
-    }
-  }
-  return null
 }
 
 const ProductTabs = ({ product }: ProductTabsProps) => {
@@ -92,16 +74,6 @@ const ProductTabs = ({ product }: ProductTabsProps) => {
   )
 }
 
-const formatDimensions = (product: HttpTypes.StoreProduct) => {
-  const parts = [
-    product.length ? `${product.length}cm (L)` : null,
-    product.width ? `${product.width}cm (W)` : null,
-    product.height ? `${product.height}cm (H)` : null,
-  ].filter(Boolean)
-
-  return parts.length ? parts.join(" x ") : null
-}
-
 const DimensionsTab = ({ dimensions }: { dimensions: string }) => {
   return (
     <div className="text-small-regular py-2">
@@ -126,7 +98,7 @@ const CareInstructionsTab = ({ instructions }: { instructions: string }) => {
   )
 }
 
-const ShippingInfoTab = () => {
+export const ShippingInfoTab = () => {
   return (
     <div className="text-small-regular py-2">
       <div className="grid grid-cols-1 gap-y-8">
