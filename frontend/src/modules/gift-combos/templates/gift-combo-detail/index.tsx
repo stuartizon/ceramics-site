@@ -44,7 +44,7 @@ export default function GiftComboDetailTemplate({
       className="content-container flex flex-col small:flex-row small:items-start py-6 relative gap-x-12"
       data-testid="gift-combo-container"
     >
-      <div className="block w-full small:max-w-[500px] relative">
+      <div className="block w-full min-w-0 small:max-w-[500px] relative">
         {bundle.images.length > 0 ? (
           <ImageGallery
             images={[...bundle.images].sort((a, b) => a.rank - b.rank)}
