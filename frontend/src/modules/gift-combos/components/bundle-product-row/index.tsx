@@ -22,6 +22,9 @@ export default function BundleProductRow({
     (selectedVariantId && variantImages?.[0]?.url) ||
     product.thumbnail ||
     product.images?.[0]?.url
+  const selectedVariant = product.variants?.find(
+    (variant) => variant.id === selectedVariantId
+  )
 
   return (
     <Link
@@ -45,9 +48,19 @@ export default function BundleProductRow({
         )}
       </div>
       <div className="flex flex-1 items-center justify-between gap-x-2 txt-compact-medium min-w-0">
-        <Text className="text-ui-fg-subtle truncate" data-testid="product-title">
-          {product.title}
-        </Text>
+        <div className="flex flex-col min-w-0">
+          <Text className="text-ui-fg-subtle truncate" data-testid="product-title">
+            {product.title}
+          </Text>
+          {selectedVariant && (
+            <p
+              className="txt-compact-xsmall text-ui-fg-muted truncate"
+              data-testid="product-variant"
+            >
+              Variant: {selectedVariant.title}
+            </p>
+          )}
+        </div>
         <div className="flex items-center gap-x-2 flex-shrink-0">
           {cheapestPrice && <PreviewPrice price={cheapestPrice} />}
         </div>
