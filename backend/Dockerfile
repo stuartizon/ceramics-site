@@ -1,6 +1,11 @@
+# syntax=docker/dockerfile:1
+
 # Build context is the monorepo root so npm workspaces can resolve the root
 # lockfile and version overrides (see package.json `overrides`) — a Nixpacks
-# build scoped to backend/ alone wouldn't see either.
+# build scoped to backend/ alone wouldn't see either. frontend/package.json is
+# copied only to satisfy lockfile validation for the workspaces glob; --workspace
+# below keeps npm from actually installing frontend's (much heavier) dependency
+# tree, which was blowing past the builder's memory/time budget.
 
 FROM node:20-alpine AS build
 WORKDIR /build
@@ -8,7 +13,8 @@ WORKDIR /build
 COPY package.json package-lock.json ./
 COPY backend/package.json backend/package.json
 COPY frontend/package.json frontend/package.json
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --workspace=backend
 
 COPY backend backend
 RUN npm run build --workspace=backend
