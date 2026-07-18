@@ -96,7 +96,7 @@ const formatDimensions = (product: HttpTypes.StoreProduct) => {
 
 const DimensionsTab = ({ dimensions }: { dimensions: string }) => {
   return (
-    <div className="text-small-regular py-8">
+    <div className="text-small-regular py-2">
       <p>{dimensions}</p>
     </div>
   )
@@ -104,7 +104,7 @@ const DimensionsTab = ({ dimensions }: { dimensions: string }) => {
 
 const MaterialTab = ({ material }: { material: string }) => {
   return (
-    <div className="text-small-regular py-8">
+    <div className="text-small-regular py-2">
       <p>{material}</p>
     </div>
   )
@@ -112,7 +112,7 @@ const MaterialTab = ({ material }: { material: string }) => {
 
 const CareInstructionsTab = ({ instructions }: { instructions: string }) => {
   return (
-    <div className="text-small-regular py-8">
+    <div className="text-small-regular py-2">
       <p className="whitespace-pre-line">{instructions}</p>
     </div>
   )
@@ -120,7 +120,7 @@ const CareInstructionsTab = ({ instructions }: { instructions: string }) => {
 
 const ShippingInfoTab = () => {
   return (
-    <div className="text-small-regular py-8">
+    <div className="text-small-regular py-2">
       <div className="grid grid-cols-1 gap-y-8">
         <div className="flex items-start gap-x-2">
           <FastDelivery />
