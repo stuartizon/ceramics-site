@@ -3,6 +3,18 @@ import { loadEnv, defineConfig } from '@medusajs/framework/utils'
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
 module.exports = defineConfig({
+  admin: {
+    // Sourcemap generation roughly doubles Vite's peak memory/time while
+    // bundling the admin dashboard, which isn't worth it for a production
+    // build — nobody debugs the admin UI's minified prod bundle directly.
+    vite: (config) => ({
+      ...config,
+      build: {
+        ...config.build,
+        sourcemap: false,
+      },
+    }),
+  },
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
     redisUrl: process.env.REDIS_URL,

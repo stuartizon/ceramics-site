@@ -16,6 +16,11 @@ COPY frontend/package.json frontend/package.json
 RUN npm ci --workspace=backend
 
 COPY backend backend
+# Raises V8's heap ceiling for the build only — the Vite admin bundle step
+# is memory-hungry enough to stall indefinitely on a constrained builder
+# rather than fail loudly (see admin.vite sourcemap change in
+# medusa-config.ts, which addresses the same problem from the other side).
+ENV NODE_OPTIONS=--max-old-space-size=4096
 RUN npm run build --workspace=backend
 
 # `medusa build` emits a self-contained app under .medusa/server with its own
