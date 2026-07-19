@@ -1,9 +1,15 @@
+import { existsSync } from "fs"
+import { join } from "path"
+
 import Image from "next/image"
 
 import { listCategories } from "@lib/data/categories"
 import { Text } from "@modules/common/components/ui"
 import Link from "next/link"
 import PlaceholderImage from "@modules/common/icons/placeholder-image"
+
+const hasCategoryImage = (handle: string) =>
+  existsSync(join(process.cwd(), "public", "images", "categories", `${handle}.jpg`))
 
 export default async function CategoryGrid() {
   const categories = await listCategories()
@@ -18,11 +24,9 @@ export default async function CategoryGrid() {
     <div className="content-container py-12 small:py-16">
       <ul className="grid grid-cols-2 xsmall:grid-cols-3 small:grid-cols-5 gap-x-6 gap-y-8">
         {topLevelCategories.map((category) => {
-          const metadataImage = category.metadata?.image
-          const image =
-            (typeof metadataImage === "string" && metadataImage) ||
-            category.products?.[0]?.thumbnail ||
-            undefined
+          const image = hasCategoryImage(category.handle)
+            ? `/images/categories/${category.handle}.jpg`
+            : undefined
 
           return (
             <li key={category.id}>
