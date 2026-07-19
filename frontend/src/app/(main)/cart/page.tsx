@@ -4,6 +4,12 @@ import CartTemplate from "@modules/cart/templates"
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
 
+// Personalized to the current cart/customer via cookies; skip the
+// static-generation attempt entirely rather than let Next fall back to
+// dynamic via a caught "Dynamic server usage" exception (harmless, but
+// logs as a scary-looking Error at build time).
+export const dynamic = "force-dynamic"
+
 export const metadata: Metadata = {
   title: "Cart",
   description: "View your cart",
