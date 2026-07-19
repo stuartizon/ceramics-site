@@ -3,10 +3,13 @@
 import * as Accordion from "@radix-ui/react-accordion"
 import { useEffect, useState } from "react"
 
-import { ChevronDownMini } from "@medusajs/icons"
+import { CheckMini, ChevronDownMini } from "@medusajs/icons"
 import { sdk } from "@lib/config"
 import { HttpTypes } from "@medusajs/types"
 import clsx from "clsx"
+
+const isHexColor = (value: unknown): value is string =>
+  typeof value === "string" && /^#[0-9a-fA-F]{6}$/.test(value)
 
 type OptionsPickerProps = {
   selectedValueIds: string[]
@@ -73,15 +76,23 @@ const OptionsPicker = ({
               ?.map((value) => ({
                 id: value.id,
                 label: value.value,
+                hex: isHexColor(value.metadata?.hex)
+                  ? value.metadata!.hex
+                  : undefined,
               }))
               .filter(
-                (value): value is { id: string; label: string } =>
-                  !!value.id && !!value.label
+                (value): value is {
+                  id: string
+                  label: string
+                  hex: string | undefined
+                } => !!value.id && !!value.label
               ) || []
 
           if (!values.length) {
             return null
           }
+
+          const isColorOption = option.title?.toLowerCase() === "color"
 
           const toggleValue = (valueId: string) => {
             const isSelected = selectedValueIds.includes(valueId)
@@ -126,30 +137,74 @@ const OptionsPicker = ({
                 </Accordion.Trigger>
               </Accordion.Header>
               <Accordion.Content className="pb-4 pt-1">
-                <div className="flex flex-wrap gap-2">
-                  {values.map((value) => {
-                    const isSelected = selectedValueIds.includes(value.id)
+                {isColorOption ? (
+                  <div className="grid grid-cols-6 gap-2">
+                    {values.map((value) => {
+                      const isSelected = selectedValueIds.includes(value.id)
 
-                    return (
-                      <button
-                        key={value.id}
-                        onClick={() => toggleValue(value.id)}
-                        className={clsx(
-                          "border-ui-border-base border text-small-regular h-10 rounded-rounded px-3 flex items-center transition-colors duration-150",
-                          {
-                            "border-ui-border-interactive text-ui-fg-base":
-                              isSelected,
-                            "text-ui-fg-muted hover:text-ui-fg-base":
-                              !isSelected,
+                      return (
+                        <button
+                          key={value.id}
+                          onClick={() => toggleValue(value.id)}
+                          className={clsx(
+                            "relative flex aspect-square items-center justify-center rounded-md ring-1 ring-inset ring-ui-border-base transition-shadow duration-150",
+                            {
+                              "outline outline-2 outline-offset-2 outline-ui-fg-interactive":
+                                isSelected,
+                            }
+                          )}
+                          style={
+                            value.hex
+                              ? { backgroundColor: value.hex }
+                              : undefined
                           }
-                        )}
-                        aria-pressed={isSelected}
-                      >
-                        {value.label}
-                      </button>
-                    )
-                  })}
-                </div>
+                          aria-pressed={isSelected}
+                          aria-label={value.label}
+                          title={value.label}
+                        >
+                          {!value.hex && (
+                            <span className="txt-compact-xsmall text-ui-fg-muted">
+                              ?
+                            </span>
+                          )}
+                          {isSelected && (
+                            <CheckMini
+                              className={clsx(
+                                "drop-shadow-[0_0_1px_rgba(0,0,0,0.6)]",
+                                value.hex ? "text-white" : "text-ui-fg-base"
+                              )}
+                            />
+                          )}
+                        </button>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {values.map((value) => {
+                      const isSelected = selectedValueIds.includes(value.id)
+
+                      return (
+                        <button
+                          key={value.id}
+                          onClick={() => toggleValue(value.id)}
+                          className={clsx(
+                            "border-ui-border-base border text-small-regular h-10 rounded-rounded px-3 flex items-center transition-colors duration-150",
+                            {
+                              "border-ui-border-interactive text-ui-fg-base":
+                                isSelected,
+                              "text-ui-fg-muted hover:text-ui-fg-base":
+                                !isSelected,
+                            }
+                          )}
+                          aria-pressed={isSelected}
+                        >
+                          {value.label}
+                        </button>
+                      )
+                    })}
+                  </div>
+                )}
               </Accordion.Content>
             </Accordion.Item>
           )
