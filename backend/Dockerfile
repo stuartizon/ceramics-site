@@ -14,7 +14,7 @@ COPY package.json package-lock.json ./
 COPY backend/package.json backend/package.json
 COPY frontend/package.json frontend/package.json
 RUN --mount=type=cache,id=npm,target=/root/.npm \
-    npm ci --workspace=backend
+    npm ci --workspace=backend --loglevel http
 
 COPY backend backend
 RUN npm run build --workspace=backend
@@ -29,7 +29,7 @@ ENV NODE_ENV=production
 
 COPY --from=build /build/backend/.medusa/server .
 RUN --mount=type=cache,id=npm,target=/root/.npm \
-    npm install --omit=dev --no-audit --no-fund --prefer-offline
+    npm install --omit=dev --no-audit --no-fund --prefer-offline --loglevel http
 
 EXPOSE 9000
 CMD ["npm", "run", "start"]
