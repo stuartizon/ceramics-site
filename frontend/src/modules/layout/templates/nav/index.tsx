@@ -8,7 +8,7 @@ import CartButton from "@modules/layout/components/cart-button"
 import SideMenu from "@modules/layout/components/side-menu"
 
 const TopNavLinks = [
-  { label: "Shop", href: "/store" },
+  { label: "Shop", href: "/shop" },
   { label: "Gift Combos", href: "/gift-combos" },
   { label: "Buying in Bulk", href: "/bulk-orders" },
   { label: "Our Story", href: "/our-story" },

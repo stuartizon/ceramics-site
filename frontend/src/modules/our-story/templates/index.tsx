@@ -97,7 +97,7 @@ const OurStoryTemplate = () => {
           Browse the full collection and find a piece that feels like it was
           made for your home.
         </Text>
-        <Link href="/store">
+        <Link href="/shop">
           <Button variant="primary" size="large">
             Shop the Collection
           </Button>

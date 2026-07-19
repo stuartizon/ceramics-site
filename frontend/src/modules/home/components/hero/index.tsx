@@ -26,7 +26,7 @@ const Hero = () => {
             create warmth, beauty, and belonging.
           </Text>
         </span>
-        <Link href="/store">
+        <Link href="/shop">
           <Button variant="secondary">Explore the Collection</Button>
         </Link>
       </div>

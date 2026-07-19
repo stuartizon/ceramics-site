@@ -17,7 +17,7 @@ const EmptyCartMessage = () => {
       </Text>
       <div>
         <Link
-          href="/store"
+          href="/shop"
           className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
         >
           Explore products

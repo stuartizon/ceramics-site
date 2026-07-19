@@ -13,6 +13,15 @@ const S3_PATHNAME = process.env.MEDUSA_CLOUD_S3_PATHNAME
  */
 const nextConfig = {
   reactStrictMode: true,
+  async redirects() {
+    return [
+      {
+        source: "/store",
+        destination: "/shop",
+        permanent: true,
+      },
+    ]
+  },
   // This workspace has its own package-lock.json (deliberately isolated
   // from the repo root's — see backend's react18/frontend's react19
   // split), so Next's root-inference heuristic sees two lockfiles and
