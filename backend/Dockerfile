@@ -28,6 +28,10 @@ WORKDIR /server
 ENV NODE_ENV=production
 
 COPY --from=build /build/backend/.medusa/server .
+# medusa build only compiles .ts/.js — it doesn't copy raw assets, so the
+# product-catalog seed script's image fixtures need an explicit copy here
+# to land at the same src/migration-scripts/seed-images path it expects.
+COPY backend/src/migration-scripts/seed-images src/migration-scripts/seed-images
 RUN --mount=type=cache,id=npm,target=/root/.npm \
     npm install --omit=dev --no-audit --no-fund --prefer-offline --loglevel http
 
