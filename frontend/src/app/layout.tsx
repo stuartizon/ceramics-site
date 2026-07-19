@@ -17,15 +17,6 @@ const notoSerifDisplay = Noto_Serif_Display({
   display: "swap",
 })
 
-// Stopgap: Next 15.5.18 has a build-crashing bug in how it statically
-// generates the /account route's parallel-route slots (@dashboard/@login)
-// — see https://github.com/stuartizon/ceramics-site/issues/2. Forcing
-// every route dynamic sidesteps static generation (and the crash)
-// entirely, though in practice routes with generateStaticParams
-// (products/categories/collections) stay statically prerendered anyway.
-// Revert this once /account is restructured to not use parallel routes.
-export const dynamic = "force-dynamic"
-
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
 }

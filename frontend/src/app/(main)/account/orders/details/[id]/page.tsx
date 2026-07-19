@@ -3,11 +3,6 @@ import OrderDetailsTemplate from "@modules/order/templates/order-details-templat
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
 
-// Personalized to the logged-in customer via cookies; can't be static.
-// See the account layout for why this needs to be set per-page rather
-// than just on the parent layout.
-export const dynamic = "force-dynamic"
-
 type Props = {
   params: Promise<{ id: string }>
 }

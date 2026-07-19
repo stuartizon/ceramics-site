@@ -8,11 +8,6 @@ import { notFound } from "next/navigation"
 import { listRegions } from "@lib/data/regions"
 import { retrieveCustomer } from "@lib/data/customer"
 
-// Personalized to the logged-in customer via cookies; can't be static.
-// See the account layout for why this needs to be set per-page rather
-// than just on the parent layout.
-export const dynamic = "force-dynamic"
-
 export const metadata: Metadata = {
   title: "Profile",
   description: "View and edit your Emma Ceramics profile.",

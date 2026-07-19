@@ -6,11 +6,6 @@ import { listOrders } from "@lib/data/orders"
 import Divider from "@modules/common/components/divider"
 import TransferRequestForm from "@modules/account/components/transfer-request-form"
 
-// Personalized to the logged-in customer via cookies; can't be static.
-// See the account layout for why this needs to be set per-page rather
-// than just on the parent layout.
-export const dynamic = "force-dynamic"
-
 export const metadata: Metadata = {
   title: "Orders",
   description: "Overview of your previous orders.",
