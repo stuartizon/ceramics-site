@@ -14,7 +14,7 @@ COPY package.json package-lock.json ./
 COPY backend/package.json backend/package.json
 COPY frontend/package.json frontend/package.json
 RUN --mount=type=cache,id=npm,target=/root/.npm \
-    npm ci --workspace=backend --loglevel http
+    npm ci --workspace=backend --no-audit --no-fund --prefer-offline --loglevel http
 
 COPY backend backend
 RUN npm run build --workspace=backend
