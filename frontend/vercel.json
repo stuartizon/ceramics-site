@@ -1,3 +1,0 @@
-{
-  "installCommand": "cd .. && npm install --workspace=frontend --no-audit --no-fund --prefer-offline"
-}

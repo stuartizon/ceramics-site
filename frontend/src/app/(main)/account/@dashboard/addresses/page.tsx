@@ -6,6 +6,11 @@ import AddressBook from "@modules/account/components/address-book"
 import { getRegion } from "@lib/data/regions"
 import { retrieveCustomer } from "@lib/data/customer"
 
+// Personalized to the logged-in customer via cookies; can't be static.
+// See the account layout for why this needs to be set per-page rather
+// than just on the parent layout.
+export const dynamic = "force-dynamic"
+
 export const metadata: Metadata = {
   title: "Addresses",
   description: "View your addresses",

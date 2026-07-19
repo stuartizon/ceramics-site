@@ -7,7 +7,7 @@ A monorepo ecommerce site built on [Medusa](https://www.medusajs.com) (headless 
 - **Backend** (`backend`): Medusa v2, Node/TypeScript. Admin dashboard for product/order management.
 - **Frontend** (`frontend`): Next.js 15, official Medusa storefront starter (cart, checkout, customer accounts, order history).
 - **Local dev**: Postgres + Redis run in Docker via the root `docker-compose.yml`. Redis backs Medusa's cache, event bus, locking, and workflow engine modules — without it those fall back to in-memory implementations that don't survive a process restart, which risks leaving orders in an inconsistent state mid-checkout. Local dev intentionally mirrors this rather than running Redis-less.
-- **Package manager**: npm (workspaces), orchestrated with [Turborepo](https://turbo.build).
+- **Package manager**: npm. `backend` and `frontend` are independent projects, each with its own `package-lock.json` — deliberately not npm workspaces, since Medusa's admin dashboard (React 18) and Next.js (React 19) need different major React versions, which workspace hoisting doesn't cleanly support. Root `package.json` only holds repo-wide lint/format tooling.
 
 ## Prerequisites
 
@@ -17,13 +17,14 @@ A monorepo ecommerce site built on [Medusa](https://www.medusajs.com) (headless 
 
 ## Getting Started (local development)
 
-1. Clone the repository and install dependencies:
+1. Clone the repository and install dependencies. `backend` and `frontend` each need their own install:
 
    ```bash
    git clone <this-repo-url>
    cd ceramics-site
    nvm use   # if using nvm
-   npm install
+   npm install --prefix backend
+   npm install --prefix frontend
    ```
 
 2. Start local Postgres and Redis:
@@ -69,11 +70,7 @@ A monorepo ecommerce site built on [Medusa](https://www.medusajs.com) (headless 
 
    The frontend runs on `http://localhost:8000`.
 
-Once both apps have been started once, you can run everything together from the repo root:
-
-```bash
-npm run dev
-```
+Once both apps have been started once, `npm run backend:dev` / `npm run frontend:dev` from the repo root are one-line shortcuts for the `cd`-and-run steps above. There's no single command that starts both together — run them in two terminals.
 
 To stop the local Postgres/Redis containers: `docker compose down` (add `-v` to also delete their data volumes).
 

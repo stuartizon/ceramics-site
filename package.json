@@ -6,30 +6,13 @@
     "node": ">=20"
   },
   "scripts": {
-    "dev": "turbo dev",
-    "build": "turbo build",
-    "start": "turbo start",
-    "lint": "turbo lint",
-    "test": "turbo test",
-    "backend:seed": "turbo seed --filter=@ceramics-site/backend",
-    "backend:dev": "turbo dev --filter=@ceramics-site/backend",
-    "frontend:dev": "turbo dev --filter=@ceramics-site/frontend"
+    "backend:dev": "npm --prefix backend run dev",
+    "frontend:dev": "npm --prefix frontend run dev"
   },
   "devDependencies": {
     "@medusajs/eslint-plugin": "2.16.0",
     "eslint": "^9.39.4",
     "jiti": "^2.7.0",
-    "prettier": "^3.2.5",
-    "turbo": "^2.0.14"
-  },
-  "workspaces": [
-    "backend",
-    "frontend",
-    "!backend/.medusa/**"
-  ],
-  "overrides": {
-    "ajv": "^8.0.0",
-    "@types/react": "19.0.5",
-    "@types/react-dom": "19.0.5"
+    "prettier": "^3.2.5"
   }
 }

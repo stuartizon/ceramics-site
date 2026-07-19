@@ -57,5 +57,8 @@
   "engines": {
     "node": ">=20"
   },
-  "packageManager": "npm@10.8.2"
+  "packageManager": "npm@10.8.2",
+  "overrides": {
+    "ajv": "^8.0.0"
+  }
 }

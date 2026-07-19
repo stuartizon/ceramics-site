@@ -75,7 +75,7 @@ managing another secret.
    the service was ever previously connected as a git-based (Railpack) deploy,
    a stale start command can persist here even after switching the source to a
    Docker image, and it silently overrides the image's own `CMD` — it crash
-   loops with an `npm error No workspaces found` error if left in place.
+   loops if left in place.
 6. Settings → Deploy → **Pre-Deploy Command**: set it to `npx medusa
    db:migrate`. This runs once per deploy, between build and start, and
    handles both schema migrations and the data-seeding "migration scripts"
