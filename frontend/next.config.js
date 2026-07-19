@@ -39,6 +39,13 @@ const nextConfig = {
         protocol: "https",
         hostname: "*.s3.amazonaws.com",
       },
+      {
+        // Cloudflare R2's Public Development URL (r2.dev) — dev-only and
+        // rate-limited, but it's what's currently configured as S3_FILE_URL
+        // in the absence of a custom domain on the bucket.
+        protocol: "https",
+        hostname: "*.r2.dev",
+      },
       ...(S3_HOSTNAME && S3_PATHNAME
         ? [
             {

@@ -1,0 +1,3 @@
+{
+  "installCommand": "npm install --workspace=frontend --prefix=.. --no-audit --no-fund --prefer-offline"
+}
