@@ -89,6 +89,10 @@ The frontend is configured via environment variables in `frontend/.env.local`:
 | `NEXT_PUBLIC_BASE_URL` | Base URL of the storefront | `http://localhost:8000` |
 | `NEXT_PUBLIC_STRIPE_KEY` | Stripe publishable key (optional, unused — payments are planned via Meshulam/Grow) | — |
 
+## Deployment
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for the backend deployment guide (Railway + Neon + Cloudflare R2).
+
 ## Resources
 
 - [Medusa Documentation](https://docs.medusajs.com)
