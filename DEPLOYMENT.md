@@ -65,6 +65,12 @@ This repo does it this way (rather than giving Railway a registry credential)
 since the repo itself is already public — no new exposure, and it avoids
 managing another secret.
 
+After the image push, the workflow also runs `railway redeploy --from-source`
+to tell Railway to pull that fresh image and deploy it — this is what removes
+the old need to manually click "Redeploy" in the Railway dashboard after
+every backend change. Setting up the token and variable this step needs is
+covered in §4 below, once the backend service actually exists to point at.
+
 ### 4. Railway project + backend service
 
 1. Sign up at [railway.app](https://railway.app).
@@ -85,6 +91,20 @@ managing another secret.
    handles both schema migrations and the data-seeding "migration scripts"
    under `backend/src/migration-scripts/` (see note in §6 below on what those
    seed).
+7. Wire up GitHub Actions to trigger Railway deploys automatically (see §3
+   above for what this enables). A project token is scoped to a project +
+   environment but not to a single service, and this Railway project also
+   contains the Redis plugin as a separate service, so both a token and an
+   explicit service name are needed:
+   - In Railway: the backend service → Settings → Tokens (or project
+     Settings → Tokens) → create a **Project Token** scoped to the
+     Production environment.
+   - In this GitHub repo → Settings → Secrets and variables → Actions:
+     - **Secret** `RAILWAY_TOKEN`: the token from the previous step.
+     - **Variable** `RAILWAY_BACKEND_SERVICE`: the backend service's name
+       (or ID) in Railway — this tells `redeploy` which of the project's
+       services to target, since the token alone only identifies the
+       project/environment.
 
 ### 5. Environment variables
 
@@ -107,12 +127,12 @@ Railway injects it itself and Medusa reads it automatically.
 ### 6. First deploy
 
 1. Push to `main` (or manually run the GHA workflow) to get an image onto
-   GHCR, then deploy the service in Railway (or Redeploy, if it already
-   pulled an older tag). **Railway does not currently auto-redeploy when a new
-   image lands on GHCR** — after each backend change lands on `main` and the
-   GHA build finishes, trigger a redeploy manually from the Railway dashboard.
-   (Automating this trigger from the GHA workflow is a known gap, not yet
-   set up.)
+   GHCR. The workflow's final step (set up in §4.7 above) then tells Railway
+   to pull and deploy that image itself — no manual Railway dashboard step
+   needed for routine backend changes after that's wired up. For this very
+   first deploy, do one manual Deploy from the Railway dashboard to get the
+   service running initially, since the GHA-triggered redeploy step needs a
+   service that already exists.
 2. Settings → Networking → Generate Domain, to get a public URL for the
    backend.
 3. **Check the generated domain's target port matches what the app actually

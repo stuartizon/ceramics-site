@@ -34,3 +34,8 @@ jobs:
             ghcr.io/${{ github.repository }}-backend:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Deploy to Railway
+        run: npx -y @railway/cli@latest redeploy --service "${{ vars.RAILWAY_BACKEND_SERVICE }}" --yes --from-source
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
