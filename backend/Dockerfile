@@ -13,14 +13,10 @@ WORKDIR /build
 COPY package.json package-lock.json ./
 COPY backend/package.json backend/package.json
 COPY frontend/package.json frontend/package.json
-RUN npm ci --workspace=backend
+RUN --mount=type=cache,id=npm,target=/root/.npm \
+    npm ci --workspace=backend
 
 COPY backend backend
-# Skips bundling the admin dashboard (Vite) entirely — that step was
-# memory-hungry enough to stall Railway's builder silently for ~20 min.
-# The dashboard is built and hosted separately instead; see admin.disable
-# in medusa-config.ts.
-ENV ADMIN_DISABLED=true
 RUN npm run build --workspace=backend
 
 # `medusa build` emits a self-contained app under .medusa/server with its own
@@ -30,12 +26,10 @@ RUN npm run build --workspace=backend
 FROM node:20-alpine AS production
 WORKDIR /server
 ENV NODE_ENV=production
-# Also needed at runtime — the server loader checks this same flag before
-# trying to serve the (now nonexistent) bundled dashboard.
-ENV ADMIN_DISABLED=true
 
 COPY --from=build /build/backend/.medusa/server .
-RUN npm install --omit=dev --no-audit --no-fund --prefer-offline
+RUN --mount=type=cache,id=npm,target=/root/.npm \
+    npm install --omit=dev --no-audit --no-fund --prefer-offline
 
 EXPOSE 9000
 CMD ["npm", "run", "start"]
