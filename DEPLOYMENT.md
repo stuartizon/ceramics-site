@@ -1,4 +1,11 @@
-# Deploying the backend to Railway
+# Deployment
+
+The backend deploys to Railway, the frontend to Vercel — two independent
+pipelines, matching how `backend/` and `frontend/` are two independent
+projects in this repo (see the root README's "Package manager" note on why
+they're not npm workspaces).
+
+## Backend (Railway)
 
 Architecture: GitHub Actions builds the backend's Docker image
 (`.github/workflows/backend-docker.yml`) and pushes it to the GitHub Container
@@ -24,17 +31,14 @@ occasional Postgres query. Object storage is
 [Cloudflare R2](https://developers.cloudflare.com/r2/) (S3-compatible, no egress
 fees), since Railway has no object storage product worth using for this yet.
 
-Frontend deployment is a separate, not-yet-made decision — this doc covers the
-backend only.
-
-## 1. Neon (Postgres)
+### 1. Neon (Postgres)
 
 1. Sign up at [neon.com](https://neon.com) (free tier, no card required).
 2. Create a project. Pick the region closest to Israel that's offered.
 3. From the project dashboard, copy the **pooled** connection string — this is
    `DATABASE_URL`.
 
-## 2. Cloudflare R2 (object storage)
+### 2. Cloudflare R2 (object storage)
 
 1. Sign up / log in to Cloudflare, open R2.
 2. Create a bucket (e.g. `ceramics-media`).
@@ -47,7 +51,7 @@ backend only.
    this is `S3_ENDPOINT`.
 6. `S3_REGION` can be `auto` for R2. `S3_BUCKET` is the bucket name from step 2.
 
-## 3. GitHub Actions → GHCR
+### 3. GitHub Actions → GHCR
 
 Nothing to configure here beyond the workflow file already in the repo — it
 authenticates to GHCR with the automatically-provided `GITHUB_TOKEN`, and pushes
@@ -61,7 +65,7 @@ This repo does it this way (rather than giving Railway a registry credential)
 since the repo itself is already public — no new exposure, and it avoids
 managing another secret.
 
-## 4. Railway project + backend service
+### 4. Railway project + backend service
 
 1. Sign up at [railway.app](https://railway.app).
 2. New Project → Empty Project, then add a service via **Deploy → Docker
@@ -82,7 +86,7 @@ managing another secret.
    under `backend/src/migration-scripts/` (see note in §6 below on what those
    seed).
 
-## 5. Environment variables
+### 5. Environment variables
 
 Set these on the backend service (see `backend/.env.template` for the full list
 used locally):
@@ -100,7 +104,7 @@ used locally):
 already encoded in `DATABASE_URL`) — no need to set it here. Don't set `PORT` —
 Railway injects it itself and Medusa reads it automatically.
 
-## 6. First deploy
+### 6. First deploy
 
 1. Push to `main` (or manually run the GHA workflow) to get an image onto
    GHCR, then deploy the service in Railway (or Redeploy, if it already
@@ -142,7 +146,7 @@ Railway injects it itself and Medusa reads it automatically.
    npx medusa user -e you@example.com -p <password>
    ```
 
-## 7. Verify
+### 7. Verify
 
 - `curl https://<backend-domain>/health` → `200`
 - Log into `https://<backend-domain>/app` with the admin user from step 6.5.
@@ -150,3 +154,56 @@ Railway injects it itself and Medusa reads it automatically.
   will need this.
 - Upload a product image via the admin to confirm R2 is wired correctly
   end-to-end.
+
+## Frontend (Vercel)
+
+The frontend deploys straight from the GitHub repo — no Docker, no custom
+build pipeline. `frontend/` is a fully standalone project (its own
+`package-lock.json`, not an npm workspace — see the root README's "Package
+manager" note), so Vercel's zero-config Next.js detection works out of the
+box with no custom install/build command needed.
+
+### 1. Project setup
+
+1. [vercel.com/new](https://vercel.com/new) → Import Git Repository → select
+   this repo (install/authorize the Vercel GitHub App if prompted).
+2. **Root Directory**: set to `frontend`. Vercel auto-detects Next.js from
+   there.
+3. Leave the Build/Install/Output Settings on their defaults — nothing to
+   override. (If you ever see a custom Install Command set here, clear it —
+   an earlier iteration of this deploy briefly needed one to work around npm
+   workspace hoisting, before the workspace split made it unnecessary.)
+
+### 2. Environment variables
+
+| Variable | Value |
+|---|---|
+| `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` | The `pk_...` key from the backend admin (Settings → Publishable API Keys) |
+| `NEXT_PUBLIC_MEDUSA_BACKEND_URL` | The Railway backend's public domain, e.g. `https://ceramics-sitebackend-production.up.railway.app` |
+| `NEXT_PUBLIC_DEFAULT_REGION` | `il` |
+| `NEXT_PUBLIC_BASE_URL` | The Vercel-assigned domain, e.g. `https://<project-name>.vercel.app` (predictable from the project name before the first deploy) — update if a custom domain is added later |
+
+Leave `NEXT_PUBLIC_STRIPE_KEY` and the two `MEDUSA_CLOUD_*` vars empty — unused.
+
+### 3. Deploy, then close the loop on CORS
+
+Deploy. Once you have the real Vercel domain, go back to the Railway backend
+service and update `STORE_CORS` / `AUTH_CORS` (Backend §5 above) to include
+it, then redeploy the backend — otherwise the storefront's requests get
+blocked by CORS even though both sides are individually up.
+
+### 4. Product images and R2
+
+`frontend/next.config.js`'s `images.remotePatterns` explicitly allowlists
+`*.r2.dev` (Cloudflare R2's public dev URL, from Backend §2). `next/image`
+enforces this list regardless of the `unoptimized` setting — if the bucket's
+public URL ever moves off `r2.dev` to a custom domain, add a matching
+`remotePatterns` entry or product images will silently fail to load.
+
+### 5. Verify
+
+- The Vercel URL loads and product images render (confirms the R2 domain
+  allowlist above is correct).
+- Add to cart and checkout round-trip successfully against the Railway
+  backend (confirms CORS is actually configured, not just that both sides
+  independently load).

@@ -88,7 +88,7 @@ The frontend is configured via environment variables in `frontend/.env.local`:
 
 ## Deployment
 
-See [DEPLOYMENT.md](DEPLOYMENT.md) for the backend deployment guide (Railway + Neon + Cloudflare R2).
+See [DEPLOYMENT.md](DEPLOYMENT.md) for the deployment guide — backend on Railway (+ Neon + Cloudflare R2), frontend on Vercel.
 
 ## Resources
 
